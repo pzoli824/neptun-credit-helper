@@ -14,11 +14,7 @@ class TestTree:
 
     @pytest.mark.skip(reason="need to implement")
     def test_tree_insert_new_element(self):
-        pass
-
-    @pytest.mark.skip(reason="need to implement")
-    def test_tree_iterate_breadth_first_search(self):
-        pass    
+        pass 
 
 class TestTreeNode:
 
