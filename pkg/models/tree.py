@@ -9,7 +9,7 @@ class Tree(Generic[T]):
         self.__root = TreeNode[T](data, None)
         self.__nodes: list['TreeNode[T]']
 
-    def add(self, data: T) -> None:
+    def insert(self, data: T) -> None:
         node = TreeNode(data, self.__root)
         self.__nodes.append(node)
 
@@ -24,7 +24,7 @@ class TreeNode(Generic[T]):
         self.__data = data
         self.__nodes = list[TreeNode[T]]
 
-    def add(self, data: T) -> None:
+    def insert(self, data: T) -> None:
         node = TreeNode(data, self.__parent)
         self.__nodes.append(node)
 
