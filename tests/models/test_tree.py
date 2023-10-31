@@ -1,8 +1,8 @@
-import unittest
+import pytest
 
-from models.tree import Tree
+from pkg.models.tree import Tree
 
-class TreeTest(unittest.TestCase):
+class TestTree:
 
     def test_new_tree_with_string(self):
         initValue = "for testing"
@@ -11,5 +11,3 @@ class TreeTest(unittest.TestCase):
         
         self.assertEqual(initValue, data, "initialization value and after instantiation value is different")
 
-if __name__ == "__main__":
-    unittest.main()        
