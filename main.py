@@ -6,15 +6,9 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
-#TODO: change namings later to camel case
-#TODO: extract magic strings
-chrome_options = Options()
-chrome_options.add_experimental_option("detach", True)
-chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-chrome_options.add_argument("--incognito")
+from pkg.providers.browser import BrowserFactory, BrowserType
 
-driver = webdriver.Chrome(chrome_options)
-
+driver = BrowserFactory.create_browser(BrowserType.CHROME).driver
 driver.get("https://neptun.szte.hu/hallgato/login.aspx")
 
 usernameInput = driver.find_element(By.ID, "user")
