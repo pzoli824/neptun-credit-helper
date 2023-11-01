@@ -1,26 +1,17 @@
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.remote.webelement import WebElement
 
 from pkg.providers.browser import BrowserFactory, BrowserType
+from pkg.providers.neptun import Neptun, University
 
-driver = BrowserFactory.create_browser(BrowserType.CHROME).driver
-driver.get("https://neptun.szte.hu/hallgato/login.aspx")
+browser = BrowserFactory.create_browser(BrowserType.CHROME)
+driver = browser.driver
 
-usernameInput = driver.find_element(By.ID, "user")
-usernameInput.clear()
-usernameInput.send_keys("username")
-
-passwordInput = driver.find_element(By.ID, "pwd")
-passwordInput.clear()
-passwordInput.send_keys("password")
-
-submitLogin = driver.find_element(By.ID, "btnSubmit")
-submitLogin.click()
+neptun = Neptun(browser, University.SZTE)
+neptun.login("username", "password")
 
 try:
     #TODO: probably not needed to store in a variable, check when refactoring
@@ -42,16 +33,21 @@ try:
         print(len(rows))
         for i in range(len(rows)):
             #magic happens here
-            print(rows[i])
+            #datas.append(rows[i].text)
+            print(rows[i].text)
+            tds = rows[i].find_elements(By.XPATH, ".//td")
+            print(len(tds))
+            for j in range(len(tds)):
+                print(j, ' ' + tds[j].text)
+            #print(tds[6].text)
+
 
     finally:
-        # Logout
-        print("should logout")
+        # Logout and close chrome
         driver.find_element(By.ID, "lbtnQuit").click()
-        #driver.quit()
+        driver.quit()
 
 except TimeoutException:
     driver.quit()
 
 #driver.quit()
-
