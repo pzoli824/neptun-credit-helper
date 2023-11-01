@@ -1,5 +1,4 @@
 import abc
-from enum import Enum
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -7,11 +6,8 @@ class UnknownBrowserTypeException(Exception):
     "Raised when the browser type is not supported/unknown"
     pass
     
-class BrowserType(Enum):
+class BrowserType:
     CHROME = "chrome"
-
-    def __repr__(self):
-        return self.value
 
 class Browser(abc.ABC):
 
