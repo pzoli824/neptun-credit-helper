@@ -1,6 +1,7 @@
 import logging
+from enum import Enum
 
-class ColumnsCourseField:
+class ColumnsCourseField(Enum):
     CODE = 1
     NAME = 2
     CREDIT = 3
@@ -54,10 +55,10 @@ class Course:
 
     @staticmethod
     def _get_data_from_column(columns: any, type: ColumnsCourseField) -> str:
-        if len(columns) == 0 or len(columns) < type:
-            logging.warn("columns value is set to empty because of insufficient length")
+        if len(columns) == 0 or len(columns) < type.value:
+            logging.warn(f"course {type.name} value is set to empty because of column short length")
             return ""
-        return columns[type].text
+        return columns[type.value].text
 
     @property
     def parent_row_id(self) -> str:
