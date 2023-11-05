@@ -25,7 +25,7 @@ class TestCourse:
         assert course._recommended_semester is "4"
         assert course._course_enrollment_times is "1"
 
-    def test_course_initialization_by_static_method(self):
+    def test_course_initialization_by_columns_static_methoh(self):
         parent_row_id = '3'
         row_id = '2'
         columns: list[TestColumn] = [
@@ -43,10 +43,39 @@ class TestCourse:
         ]
 
         course = Course.create_course_from_columns(columns, parent_row_id, row_id)
+        print(course)
 
         assert course.parent_row_id is parent_row_id
         assert course.row_id is row_id
         assert course._code is 'code'   
+        assert course._name is 'name'   
+        assert course._credit is 'credit'   
+        assert course._recommended_semester is '4'   
+        assert course._sample_curriculum is 'KB'   
+        assert course._course_group_code is '45'   
+        assert course._course_group_name is 'group_name'   
+        assert course._course_type is 'colloquium'   
+        assert course._result is 'success (4)'   
+        assert course._course_enrollment_times is '1'   
 
-    def test_course_print_str_represetation(self):
-        assert False           
+    def test_course_initialization_by_columns_static_method_column_short_length(self):
+        columns: list[TestColumn] = [
+        TestColumn("DISPOSABLE!"),
+        TestColumn("code"), 
+        TestColumn("name"),
+        ]
+        
+        course = Course.create_course_from_columns(columns, '', '')
+
+        assert course.parent_row_id is ''
+        assert course.row_id is ''
+        assert course._code is 'code'   
+        assert course._name is 'name'   
+        assert course._credit is ''   
+        assert course._recommended_semester is ''   
+        assert course._sample_curriculum is ''   
+        assert course._course_group_code is ''   
+        assert course._course_group_name is ''   
+        assert course._course_type is ''   
+        assert course._result is ''   
+        assert course._course_enrollment_times is ''                     
