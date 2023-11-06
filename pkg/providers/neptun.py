@@ -31,13 +31,6 @@ class NeptunPageElement:
     SAMPLE_CURRICULUM_COURSE_TABLE_TOP_ROWS_XPATH = "//*[contains(@id, 'tr__')]"
     SAMPLE_CURRICULUM_COURSE_TABLE_ROW_COLUMNS_XPATH = ".//td"
 
-    @staticmethod
-    def get_sample_curriculum_course_table_top_rows_by_level_xpath(id: str, level: int) -> str:
-        if level < 2:
-            return f"//*[contains(@id, 'tr__')]"
-        else:
-            return f"//tr[@id='trs__{id}']//descendant::tr[contains(@id, 'tr{level}__')]"
-        
 TABLE_NO_ROW_FOUND = 0
 
 class Neptun:
@@ -86,12 +79,13 @@ class Neptun:
                 soup = BeautifulSoup(str(table_body), "html5lib")
                 lowest_level = self._get_table_lowest_row_level(soup, 1)
                 tree = self._get_table_rows_in_array_from_lowest_level_to_highest(soup, lowest_level)
+                return tree
 
             except Exception as e:
                 logging.error(traceback.format_exc())
 
             finally:
-                self._logout_and_quit()
+                self.logout_and_quit()
                 print("logged out and quited")
 
         except TimeoutException:
@@ -147,6 +141,6 @@ class Neptun:
 
             return self._get_table_lowest_row_level(soup, level+1)
 
-    def _logout_and_quit(self) -> None:
+    def logout_and_quit(self) -> None:
         self._browser.find_element(By.ID, NeptunPageElement.LOGOUT_ELEMENT_ID).click()
         self._browser.quit()
