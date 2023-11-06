@@ -13,6 +13,40 @@ class ColumnsCourseField(Enum):
     RESULT = 9
     COURSE_ENROLLMENT_TIMES = 10
 
+class ColumnsEnrolledCourseField(Enum):
+    CODE = 1
+    NAME = 2
+    CREDIT = 3
+    COURSE_ENROLLMENT_TIMES = 4
+
+
+class EnrolledCourse:
+
+    def __init__(self, code: str, name: str, credit: str, course_enrollment_times: str) -> None:
+        self._code = code
+        self._name = name
+        self._credit = credit
+        self._course_enrollment_times = course_enrollment_times
+
+    @staticmethod
+    def create_course_from_columns(columns: any) -> 'EnrolledCourse':
+        c = EnrolledCourse(
+            EnrolledCourse._get_data_from_column(columns, ColumnsEnrolledCourseField.CODE),
+            EnrolledCourse._get_data_from_column(columns, ColumnsEnrolledCourseField.NAME),
+            EnrolledCourse._get_data_from_column(columns, ColumnsEnrolledCourseField.CREDIT),
+            EnrolledCourse._get_data_from_column(columns, ColumnsEnrolledCourseField.COURSE_ENROLLMENT_TIMES),
+        )
+        return c
+
+    @staticmethod
+    def _get_data_from_column(columns: any, type: ColumnsCourseField) -> str:
+        if len(columns) == 0 or len(columns) <= type.value:
+            logging.warn(f"enrolled course {type.name} value is set to empty because of column short length")
+            return ""
+        return columns[type.value].text
+
+    def __str__(self):
+        return f'code: {self._code}, name: {self._name}, credit: {self._credit}, course_enrollment_times: {self._course_enrollment_times}'
 
 class Course:
     _parent_row_id = ""

@@ -2,7 +2,7 @@ import logging
 import traceback
 
 from bs4 import BeautifulSoup
-from pkg.models.course import Course
+from pkg.models.course import Course, EnrolledCourse
 from pkg.models.tree import Tree, Node
 from pkg.providers.browser import Browser
 from selenium.webdriver.common.by import By
@@ -81,7 +81,15 @@ class Neptun:
 
         courses = list[Course]()
 
-        #TODO extreact enrolled courses and map them into Course type, push to a list and return
+        html = self._browser.page_source
+        soup = BeautifulSoup(html, "html5lib")
+        row_level_id = "tr__"
+        rows = soup.find_all('tr', id=lambda e: e and e.startswith(row_level_id))
+        for row in rows:        
+                columns = row.select('td')
+                course = EnrolledCourse.create_course_from_columns(columns)
+                courses.append(course)
+                print("course: ", course)
 
         return courses
 
