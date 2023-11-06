@@ -99,6 +99,7 @@ class Neptun:
 
             html = self._browser.page_source
             soup = BeautifulSoup(html, "html5lib")
+            #TODO rename magic string function_table_body???
             table_body = soup.find('td', id='function_table_body')
             soup = BeautifulSoup(str(table_body), "html5lib")
             lowest_level = self._get_table_lowest_row_level(soup, 1)
