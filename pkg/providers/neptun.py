@@ -16,6 +16,7 @@ class University:
 class NeptunPage:
     LOGIN = "/hallgato/login.aspx"
     SAMPLE_CURRICULUM = "/hallgato/main.aspx?ismenuclick=true&ctrl=02101"
+    COURSES = "/hallgato/main.aspx?ismenuclick=true&ctrl=0304"
 
 class NeptunPageElement:
     LOGIN_BUTTON_ID = "btnSubmit"
@@ -30,6 +31,10 @@ class NeptunPageElement:
     SAMPLE_CURRICULUM_RETRIEVED_TABLE_ID = "head_Code"
     SAMPLE_CURRICULUM_COURSE_TABLE_TOP_ROWS_XPATH = "//*[contains(@id, 'tr__')]"
     SAMPLE_CURRICULUM_COURSE_TABLE_ROW_COLUMNS_XPATH = ".//td"
+
+    COURSES_QUERY_ENROLLED_COURSES_BUTTON_ID = "upFilter_expandedsearchbutton"
+    COURSES_SEMESTER_SELECT_ID = "cmb_cmb"
+    COURSES_RETRIEVED_SEMESTER_COURSES_DIV_ID = "h_addedsubjects_ipCreditSum"
 
 TABLE_NO_ROW_FOUND = 0
 
@@ -57,6 +62,28 @@ class Neptun:
 
         login_button = self._browser.find_element(By.ID, NeptunPageElement.LOGIN_BUTTON_ID)
         login_button.click()
+
+    def logout_and_quit(self) -> None:
+        self._browser.find_element(By.ID, NeptunPageElement.LOGOUT_ELEMENT_ID).click()
+        self._browser.quit()
+
+    def get_enrolled_courses_in_current_semester(self) -> list[Course]:
+        self._navigate_to(NeptunPage.COURSES)
+        WebDriverWait(self._browser, 15).until(
+            EC.presence_of_element_located((By.ID, NeptunPageElement.COURSES_SEMESTER_SELECT_ID))
+        )
+
+        query_button = self._browser.find_element(By.ID, NeptunPageElement.COURSES_QUERY_ENROLLED_COURSES_BUTTON_ID)
+        query_button.click()
+        WebDriverWait(self._browser, 15).until(
+            EC.presence_of_element_located((By.ID, NeptunPageElement.COURSES_RETRIEVED_SEMESTER_COURSES_DIV_ID))
+        )
+
+        courses = list[Course]()
+
+        #TODO extreact enrolled courses and map them into Course type, push to a list and return
+
+        return courses
 
     def get_all_course_informations(self) -> Tree[Course]:
             WebDriverWait(self._browser, 15).until(
@@ -124,7 +151,3 @@ class Neptun:
                 return level-1
 
             return self._get_table_lowest_row_level(soup, level+1)
-
-    def logout_and_quit(self) -> None:
-        self._browser.find_element(By.ID, NeptunPageElement.LOGOUT_ELEMENT_ID).click()
-        self._browser.quit()
