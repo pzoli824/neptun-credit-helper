@@ -1,3 +1,5 @@
+import logging
+import traceback
 from pkg.providers.browser import BrowserFactory, BrowserType
 from pkg.providers.neptun import Neptun, University
 
@@ -6,4 +8,11 @@ driver = browser.driver
 
 neptun = Neptun(browser, University.SZTE)
 neptun.login("username", "password")
-neptun.get_all_course_informations()
+try:
+    neptun.get_all_course_informations()
+
+except Exception as e:
+    logging.error(traceback.format_exc())
+
+finally:
+    neptun.logout_and_quit()

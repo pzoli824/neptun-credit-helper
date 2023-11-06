@@ -59,7 +59,6 @@ class Neptun:
         login_button.click()
 
     def get_all_course_informations(self) -> Tree[Course]:
-        try:
             WebDriverWait(self._browser, 15).until(
                 EC.presence_of_element_located((By.ID, NeptunPageElement.AFTER_LOGIN_MESSAGES_TABLE_HEADER_ID))
             )
@@ -67,33 +66,18 @@ class Neptun:
             self._browser.find_element(By.ID, NeptunPageElement.FILTER_BY_ALL_COURSES_CHECK_BOX_ID).click()
             self._browser.find_element(By.ID, NeptunPageElement.QUERY_ALL_COURSES_INFORMATION_BUTTON_ID).click()
 
-            try:
-                # wait for results
-                WebDriverWait(self._browser, 15).until(
-                    EC.presence_of_element_located((By.ID, NeptunPageElement.SAMPLE_CURRICULUM_RETRIEVED_TABLE_ID))
-                )
+            WebDriverWait(self._browser, 15).until(
+                EC.presence_of_element_located((By.ID, NeptunPageElement.SAMPLE_CURRICULUM_RETRIEVED_TABLE_ID))
+            )
 
-                html = self._browser.page_source
-                soup = BeautifulSoup(html, "html5lib")
-                table_body = soup.find('td', id='function_table_body')
-                soup = BeautifulSoup(str(table_body), "html5lib")
-                lowest_level = self._get_table_lowest_row_level(soup, 1)
-                tree = self._get_table_rows_in_array_from_lowest_level_to_highest(soup, lowest_level)
-                return tree
+            html = self._browser.page_source
+            soup = BeautifulSoup(html, "html5lib")
+            table_body = soup.find('td', id='function_table_body')
+            soup = BeautifulSoup(str(table_body), "html5lib")
+            lowest_level = self._get_table_lowest_row_level(soup, 1)
+            tree = self._get_table_rows_in_array_from_lowest_level_to_highest(soup, lowest_level)
+            return tree
 
-            except Exception as e:
-                logging.error(traceback.format_exc())
-
-            finally:
-                self.logout_and_quit()
-                print("logged out and quited")
-
-        except TimeoutException:
-            self._browser.quit()
-
-        finally:
-            return []
-        
     def _get_table_rows_in_array_from_lowest_level_to_highest(self, soup: BeautifulSoup, lowest_level: int) -> Tree[Course]:
         previous_course_nodes = list[Node[Course]]()
         for level in range(lowest_level,1,-1):
