@@ -33,8 +33,7 @@ class ChromeBrowser(Browser):
     @property
     def driver(self) -> webdriver:
         return self._driver
-
-
+    
 class BrowserFactory:
 
     @staticmethod
