@@ -28,3 +28,9 @@ class TestNeptun:
         assert mock.driver.find_element.call_count is 3
         mock.driver.get.assert_called_with(expected_url)
         assert login_button_mock.click.call_count is 1
+
+    def test_neptun_get_enrolled_courses_in_current_semester(self):
+        assert False
+
+    def test_neptun_get_all_course_informations(self):
+        assert False
