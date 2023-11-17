@@ -5,7 +5,11 @@ from rich.panel import Panel
 from rich.text import Text
 from rich.prompt import Prompt
 from rich.table import Table
-
+from rich.align import Align
+import keyboard
+import platform
+import os
+import logging
 
 from pkg.providers.neptun import University
 
@@ -22,12 +26,13 @@ class UITerminal:
         password = Prompt.ask("Add meg a jelszavad", password=True)
 
     def home(self):
+        self._console.clear()
         main_layout = Layout()
         data_layout = Layout(self._get_courses_in_table(), name="data")
 
         main_layout.split_column(
             Layout(name="informations"),
-            data_layout
+            Align.center(data_layout, vertical="middle")
         )
 
         commands_layout = Layout(self._get_commands(), name="commands")
@@ -38,13 +43,35 @@ class UITerminal:
             personal_info_layout,
         )
 
-        print(main_layout)    
+        print(main_layout)
+        self._listen_user_input()
+
+    def _listen_user_input(self):
+        while True:
+            try:
+                if keyboard.is_pressed('esc'):
+                    break
+            except:
+                break
+        
+        self._clear_system_console()
+
+        
+    def _clear_system_console(self):
+        operation_system = platform.system()
+        match operation_system:
+            case "Windows":
+                os.system("cls")
+            case "Linux":
+                os.system("clear")
+            case _:
+                logging.warning("Failed to clear system console")
+
 
     def _get_commands(self):
         return Panel(
             Group(
-                Text.assemble("- press ", ("1", "bold yellow"), " to change subject view to detailed mode."),
-                Text.assemble("- press ", ("ESC", "bold red"), " to exit program.")
+                Text.assemble("- Nyomd meg az ", ("ESC", "bold red"), " billentyűt a kilépéshez!")
             ),
         title="Parancsok"
         )
