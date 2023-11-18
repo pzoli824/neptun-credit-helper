@@ -6,3 +6,4 @@ html5lib==1.1
 rich==13.6.0
 keyboard==0.13.5
 click==8.1.7
+chromedriver-autoinstaller==0.6.2
