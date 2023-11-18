@@ -34,13 +34,15 @@ class Student:
         courses = self._all_courses.getLeafNodesData()
         finished_credits = 0
         for course in courses:
-            finished_credits += int(course.credit)
+            if course.credit != '':
+                finished_credits += int(course.credit)
 
         return finished_credits    
 
     def calculate_current_semester_credits(self) -> int:
         credits = 0
         for current_course in self._current_courses:
-            credits += int(current_course.credit)
+            if current_course.credit != '':
+                credits += int(current_course.credit)
 
         return credits    
