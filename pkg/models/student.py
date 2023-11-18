@@ -11,6 +11,10 @@ class Student:
         self._name = name
 
     @property
+    def name(self) -> str:
+        return self._name
+
+    @property
     def all_courses(self) -> Tree[Course]:
         return self._all_courses        
 

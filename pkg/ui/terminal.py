@@ -11,6 +11,7 @@ import platform
 import os
 import logging
 from pkg.models.auth import LoginCredentials
+from pkg.models.course import REQUIRED_CREDIT
 from pkg.models.student import Student
 
 from pkg.providers.neptun import University
@@ -82,13 +83,16 @@ class UITerminal:
         )
 
     def _get_personal_informations(self):
+        name = self._student.name
+        credits = self._student.calculate_finished_credits()
+        current_semester_credits = self._student.calculate_current_semester_credits()
         return Panel(
             Group(
-                Text.assemble("Név: ", ("Teszt személy", "bold yellow")),
-                Text.assemble("Kreditek: ", ("150", "bold red"), "/180"),
-                Text.assemble("Szükséges kreditek: ", ("30", "bold red")),
-                Text.assemble("Ebben a félévben csinált kreditek: ", ("22", "bold yellow")),
-                Text.assemble("Eddig a megszerzett kreditek: ", ("150", "bold green"))
+                Text.assemble("Név: ", (name, "bold yellow")),
+                Text.assemble("Kreditek: ", (str(credits), "bold red"), "/", str(REQUIRED_CREDIT)),
+                Text.assemble("Szükséges kreditek: ", (str(REQUIRED_CREDIT-credits), "bold red")),
+                Text.assemble("Ebben a félévben csinált kreditek: ", (str(current_semester_credits), "bold yellow")),
+                Text.assemble("Eddig a megszerzett kreditek: ", (str(credits), "bold green"))
             ),
         title="Személyes adatok"
         )

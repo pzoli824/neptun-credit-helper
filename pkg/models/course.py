@@ -1,6 +1,8 @@
 import logging
 from enum import Enum
 
+REQUIRED_CREDIT = 180
+
 class ColumnsCourseField(Enum):
     CODE = 1
     NAME = 2
