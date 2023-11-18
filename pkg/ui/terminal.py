@@ -10,6 +10,8 @@ import keyboard
 import platform
 import os
 import logging
+from pkg.models.auth import LoginCredentials
+from pkg.models.student import Student
 
 from pkg.providers.neptun import University
 
@@ -17,13 +19,16 @@ from pkg.providers.neptun import University
 
 class UITerminal:
 
-    def __init__(self):
+    def __init__(self, student: Student):
         self._console = Console()
+        self._student = student
 
-    def login(self):
+    @staticmethod
+    def get_login_credentials() -> LoginCredentials:
         university = Prompt.ask("Válassz egyetemet", choices=[University.SZTE])
         username = Prompt.ask("Add meg a felhasználóneved")
         password = Prompt.ask("Add meg a jelszavad", password=True)
+        return LoginCredentials(username, password, university)
 
     def home(self):
         self._console.clear()
