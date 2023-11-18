@@ -45,6 +45,14 @@ class EnrolledCourse:
             return ""
         return columns[type.value].text
 
+    @property
+    def code(self) -> str:
+        return self._code
+    
+    @property
+    def credit(self) -> str:
+        return self._credit
+
     def __str__(self):
         return f'code: {self._code}, name: {self._name}, credit: {self._credit}, course_enrollment_times: {self._course_enrollment_times}'
 
@@ -110,6 +118,13 @@ class Course:
     def row_id(self, row_id: str): 
         self._row_id = row_id     
 
+    @property
+    def code(self) -> str:
+        return self._code
+    
+    @property
+    def credit(self) -> str:
+        return self._credit
 
     def __str__(self):
         return f'code: {self._code}, name: {self._name}, credit: {self._credit}, recommended_semester: {self._recommended_semester}, sample_curriculum: {self._sample_curriculum}, course_group_code: {self._course_group_code}, course_group_name: {self._course_group_name}, course_type: {self._course_type}, outcome: {self._result}, course_enrollment_times: {self._course_enrollment_times}'
