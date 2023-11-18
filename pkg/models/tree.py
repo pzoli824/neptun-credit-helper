@@ -69,3 +69,8 @@ class Node(Generic[T]):
     @property
     def children(self) -> list['Node[T]']:
         return self.__connections.children       
+
+    def __str__(self):
+        hasChildren = len(self.__connections.children) > 0 if "YES" else "NO"
+        hasParent = self.__connections.parent != None if "YES" else "NO"
+        return f"This node has children: {hasChildren}, and has parent: {hasParent} " + str(self.data)
