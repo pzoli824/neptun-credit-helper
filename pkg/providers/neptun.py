@@ -89,7 +89,6 @@ class Neptun:
                 columns = row.select('td')
                 course = EnrolledCourse.create_course_from_columns(columns)
                 courses.append(course)
-                print("course: ", course)
 
         return courses
 
