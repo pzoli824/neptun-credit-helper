@@ -62,9 +62,9 @@ class Course:
 
     def __init__(
             self, 
-            code: str, name: str, credit: str, recommended_semester: str,
-            sample_curriculum: str, course_group_code: str, course_group_name: str,
-            course_type: str, result: str, course_enrollment_times: str
+            code: str = "", name: str = "", credit: str = "", recommended_semester: str = "",
+            sample_curriculum: str = "", course_group_code: str = "", course_group_name: str = "",
+            course_type: str = "", result: str = "", course_enrollment_times: str = ""
             ) -> None:
         self._code = code
         self._name = name
@@ -98,7 +98,7 @@ class Course:
     @staticmethod
     def _get_data_from_column(columns: any, type: ColumnsCourseField) -> str:
         if len(columns) == 0 or len(columns) <= type.value:
-            logging.warn(f"course {type.name} value is set to empty because of column short length")
+            logging.warning(f"course {type.name} value is set to empty because of column short length")
             return ""
         return columns[type.value].text
 
