@@ -50,10 +50,18 @@ class EnrolledCourse:
     @property
     def code(self) -> str:
         return self._code
-    
+
+    @property
+    def name(self) -> str:
+        return self._name    
+
     @property
     def credit(self) -> str:
         return self._credit
+
+    @property
+    def course_enrollment_times(self) -> str:
+        return self._course_enrollment_times
 
     def __str__(self):
         return f'code: {self._code}, name: {self._name}, credit: {self._credit}, course_enrollment_times: {self._course_enrollment_times}'
@@ -125,8 +133,45 @@ class Course:
         return self._code
     
     @property
+    def name(self) -> str:
+        return self._name
+    
+    @property
     def credit(self) -> str:
         return self._credit
+    
+    @property
+    def course_enrollment_times(self) -> str:
+        return self._course_enrollment_times
+
+    @property
+    def course_group_code(self) -> str:
+        return self._course_group_code
+
+    @property
+    def course_group_name(self) -> str:
+        return self._course_group_name
+
+    @property
+    def course_type(self) -> str:
+        return self._course_type
+
+    @property
+    def recommended_semester(self) -> str:
+        return self._recommended_semester
+
+    @property
+    def result(self) -> str:
+        return self._result
+
+    @property
+    def sample_curriculum(self) -> str:
+        return self._sample_curriculum
+
+    @property
+    def row_id(self) -> str:
+        return self._row_id
+
 
     def __str__(self):
         return f'code: {self._code}, name: {self._name}, credit: {self._credit}, recommended_semester: {self._recommended_semester}, sample_curriculum: {self._sample_curriculum}, course_group_code: {self._course_group_code}, course_group_name: {self._course_group_name}, course_type: {self._course_type}, outcome: {self._result}, course_enrollment_times: {self._course_enrollment_times}'

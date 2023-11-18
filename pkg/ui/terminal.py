@@ -108,13 +108,10 @@ class UITerminal:
         table.add_column("Típus", justify="center", style="green")
         table.add_column("Eredmény", justify="center", style="green")
 
+        courses = self._student.all_courses.getLeafNodesData()
+        for course in courses:
+            table.add_row(course.code, course.name, course.credit, course. recommended_semester, course.course_enrollment_times, course.course_type, course.result)
 
-
-        table.add_row("Dec 20, 2019", "Star Wars: The Rise of Skywalker", "$952,110,690")
-        table.add_row("May 25, 2018", "Solo: A Star Wars Story", "$393,151,347")
-        table.add_row("Dec 15, 2017", "Star Wars Ep. V111: The Last Jedi", "$1,332,539,889")
-        table.add_row("Dec 16, 2016", "Rogue One: A Star Wars Story", "$1,332,439,889")
-                              
         return Panel(
             table,
             title="Kurzus adatok"
