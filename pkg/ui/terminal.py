@@ -91,8 +91,9 @@ class UITerminal:
                 Text.assemble("Név: ", (name, "bold yellow")),
                 Text.assemble("Kreditek: ", (str(credits), "bold red"), "/", str(REQUIRED_CREDIT)),
                 Text.assemble("Szükséges kreditek: ", (str(REQUIRED_CREDIT-credits), "bold red")),
-                Text.assemble("Ebben a félévben csinált kreditek: ", (str(current_semester_credits), "bold yellow")),
-                Text.assemble("Eddig a megszerzett kreditek: ", (str(credits), "bold green"))
+                Text.assemble("Eddig a megszerzett kreditek: ", (str(credits), "bold green")),
+                Text.assemble("Ebben a szemeszterben csinált kreditek: ", (str(current_semester_credits), "bold yellow")),
+                Text.assemble("Kreditek jelenlegi szemeszterrel bezáróan: ", (str(credits+current_semester_credits), "bold yellow"))
             ),
         title="Személyes adatok"
         )
@@ -110,7 +111,7 @@ class UITerminal:
 
         courses = self._student.all_courses.getLeafNodesData()
         for course in courses:
-            table.add_row(course.code, course.name, course.credit, course. recommended_semester, course.course_enrollment_times, course.course_type, course.result)
+            table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
 
         return Panel(
             table,

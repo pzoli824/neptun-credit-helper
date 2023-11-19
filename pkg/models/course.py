@@ -162,7 +162,7 @@ class Course:
 
     @property
     def result(self) -> str:
-        return self._result
+        return self._result.replace('Teljesítés féléve:','').strip()
 
     @property
     def sample_curriculum(self) -> str:

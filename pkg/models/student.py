@@ -34,7 +34,7 @@ class Student:
         courses = self._all_courses.getLeafNodesData()
         finished_credits = 0
         for course in courses:
-            if course.credit != '':
+            if course.credit != '' and course.result != '':
                 finished_credits += int(course.credit)
 
         return finished_credits    
