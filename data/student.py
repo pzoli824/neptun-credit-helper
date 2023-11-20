@@ -1,3 +1,4 @@
+import random
 from pkg.models.student import Student
 from pkg.models.course import EnrolledCourse, Course
 from pkg.models.tree import Tree, Node
@@ -11,6 +12,7 @@ def data_test_student() -> Student:
 def data_test_all_course() -> Tree[Course]:
     p1 = Node[Course](Course('', 'Test Parent Courses 1'))
     p2 = Node[Course](Course('', 'Test Parent Courses 2'))
+    p3 = Node[Course](Course('', 'Test Parent Courses 3'))
 
     p1.appendChildNodes(
         Node[Course](Course('1', 'Test Course 1', '2', '1', result='Teljesítés féléve: ', course_enrollment_times='')),
@@ -31,9 +33,24 @@ def data_test_all_course() -> Tree[Course]:
         Node[Course](Course('14', 'Test Course 14', '4', '4', result='', course_enrollment_times='')),
         Node[Course](Course('15', 'Test Course 15', '5', '4', result='', course_enrollment_times=''))
     )
+
+    p3.appendChildNodes(
+        *data_test_create_node_courses(16,70)
+    )
+
     t = Tree[Course](Course())
-    t.appendChildNodes(p1, p2)
+    t.appendChildNodes(p1, p2, p3)
     return t
+
+def data_test_create_node_courses(l: int, h: int) -> list[Node[Course]]:
+    nodes: list[Node[Course]] = []
+    for n in range(l,h):
+        credit = random.randint(1, 5)
+        semester = random.randint(1, 6)
+        node = Node[Course](Course(f'{n}', f'Test Course {n}', f'{credit}', f'{semester}', result='', course_enrollment_times=''))
+        nodes.append(node)
+
+    return nodes
 
 def data_test_enrolled_courses() -> list[EnrolledCourse]:
     return [
