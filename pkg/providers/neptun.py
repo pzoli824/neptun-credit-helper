@@ -115,37 +115,54 @@ class Neptun:
 
     def _get_table_rows_in_array_from_lowest_level_to_highest(self, soup: BeautifulSoup, lowest_level: int) -> Tree[Course]:
         previous_course_nodes = list[Node[Course]]()
-        for level in range(lowest_level,1,-1):
+        for level in range(lowest_level,0,-1):
             row_level_id = "tr__"
-            if level > 1: 
+            if level < 1:
+                 break
+            elif level > 1: 
                 row_level_id = f"tr{level}__"
-            
+
             rows = soup.find_all('tr', id=lambda e: e and e.startswith(row_level_id))
             current_course_nodes = list[Node[Course]]()
             for row in rows:
-                unsplitted_row_id = row.find_parent('table')['id'].split('__')
-                parent_row_id = ''
-                if len(unsplitted_row_id) > 1:
-                    parent_row_id = unsplitted_row_id[1]
-                row_id = row.get('id')
+                row_id = self._get_current_row_id(row)
+                parent_row_id = self._get_parent_row_id(row, row_id)
+
                 columns = row.select('td')
                 course = Course.create_course_from_columns(columns, parent_row_id, row_id)
                 current_course_node = Node[Course](course)
-                if len(previous_course_nodes) == 0:
-                    previous_course_nodes.append(current_course_node)
-                    continue
-                else:
-                    for previous_course_node in previous_course_nodes:
-                        if course.row_id == previous_course_node.data.parent_row_id:
-                            current_course_node.appendChildNodes(previous_course_node)
-                    
+                for previous_course_node in previous_course_nodes:
+                    if course.row_id == previous_course_node.data.parent_row_id:
+                        current_course_node.appendChildNodes(previous_course_node)                    
                     current_course_nodes.append(current_course_node)
 
-            previous_course_nodes = current_course_nodes
+            previous_course_nodes = []
+            previous_course_nodes = current_course_nodes[:]
 
         tree = Tree[Course](Course("", "", "", "", "", "", "", "", "", ""))
         tree.appendChildNodes(*previous_course_nodes)
         return tree
+
+    def _get_current_row_id(self, current_row: any) -> str:
+        unsplitted_row_id = current_row.get('id').split('__')
+        row_id = ''
+        if len(unsplitted_row_id) > 1:
+                row_id = unsplitted_row_id[1]
+        else:
+            logging.warning(f"Couldn't split row id for two parts: {unsplitted_row_id[0]}")   
+
+        return row_id
+
+
+    def _get_parent_row_id(self, current_row: any, current_row_id: str) -> str:
+        unsplitted_parent_row_id = current_row.find_parent('table')['id'].split('_')
+        parent_row_id = ''
+        if len(unsplitted_parent_row_id) > 1:
+            parent_row_id = unsplitted_parent_row_id[1]
+        else:
+            logging.warning(f"Couldn't split parent row id for two parts. Current row id: {current_row_id}, parent row: {unsplitted_parent_row_id[0]}")   
+             
+        return parent_row_id           
 
     def _get_table_lowest_row_level(self, soup: BeautifulSoup, level: int) -> int:
             row_level_id = "tr__"
