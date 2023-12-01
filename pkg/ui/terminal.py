@@ -13,10 +13,7 @@ import logging
 from pkg.models.auth import LoginCredentials
 from pkg.models.course import REQUIRED_CREDIT
 from pkg.models.student import Student
-
 from pkg.providers.neptun import University
-
-
 
 class UITerminal:
 
@@ -34,6 +31,7 @@ class UITerminal:
     def home(self):
         self._console.clear()
         main_layout = Layout()
+
         data_layout = Layout(self._get_courses_in_table(), name="data")
 
         main_layout.split_column(
@@ -47,9 +45,10 @@ class UITerminal:
         main_layout["informations"].split_row(
             commands_layout,
             personal_info_layout,
-        )
+        )     
 
         print(main_layout)
+
         self._listen_user_input()
 
     def _listen_user_input(self):
@@ -61,8 +60,7 @@ class UITerminal:
                 break
         
         self._clear_system_console()
-
-        
+   
     def _clear_system_console(self):
         operation_system = platform.system()
         match operation_system:
@@ -72,7 +70,6 @@ class UITerminal:
                 os.system("clear")
             case _:
                 logging.warning("Failed to clear system console")
-
 
     def _get_commands(self):
         return Panel(
@@ -99,7 +96,7 @@ class UITerminal:
         )
 
     def _get_courses_in_table(self):
-        table = Table()
+        table = Table(expand=True, title="Kurzus adatok")
 
         table.add_column("Kód", justify="center", style="cyan", no_wrap=True)
         table.add_column("Név", justify="center", style="magenta")
@@ -110,10 +107,15 @@ class UITerminal:
         table.add_column("Eredmény", justify="center", style="green")
 
         courses = self._student.all_courses.getLeafNodesData()
+
+        table_header_size = 3
+        table_footer_size = 1
+        data_layout_title_size = 1
+
+        display_row_number = (self._console.height / 2) - (table_header_size + table_footer_size + data_layout_title_size)
         for course in courses:
             table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
+            if table.row_count >= display_row_number:
+                break
 
-        return Panel(
-            table,
-            title="Kurzus adatok"
-        )
+        return table
