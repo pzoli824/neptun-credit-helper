@@ -11,12 +11,16 @@ class Pagination(Generic[T]):
         self._page_index = 0
         self._quantity = quantity
 
+    def _get_page_start_index(self) -> int:
+        page = self._page_index / self._quantity
+        return math.floor(page) * self._quantity
+
     def set_quantity(self, quantity):
         self._quantity = quantity
 
     def get_page_number(self) -> int:
         page = self._page_index / self._quantity
-        if page < 1:
+        if page <= 1:
             page = 1
         else:
             page = math.floor(page)
@@ -60,15 +64,17 @@ class Pagination(Generic[T]):
         if self._page_index == 0:
             return []
         
-        index = self._page_index
+        index = self._page_index + 1
+        page_start_index = self._get_page_start_index()
+        page_original_array_index = self._page_index
         data = []
 
         if index >= self._quantity:
-            data = self._data[index - self._quantity:self._quantity:1]
-            self._page_index = index - self._quantity
+            data = self._data[page_start_index:self._quantity:1]
+            self._page_index = page_original_array_index - self._quantity
         else:
             remaining_quantity = index
-            data = self._data[index:remaining_quantity:1]
+            data = self._data[page_start_index:remaining_quantity:1]
             self._page_index = 0
 
         return data
