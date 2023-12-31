@@ -11,6 +11,24 @@ class Pagination(Generic[T]):
         self._page_index = 0
         self._quantity = quantity
 
+    def __iter__(self):
+        self._i = 0
+        return self
+
+    def __next__(self):
+        if self._i < len(self._data):
+            data = self._data[self._i]
+            self._i += 1
+            return data
+        else:
+            raise StopIteration
+
+    def __len__(self):
+        return len(self._data)
+
+    def __getitem__(self, index): 
+        return self._data[index]       
+
     def _get_page_start_index(self) -> int:
         page = self._page_index / self._quantity
         return math.floor(page) * self._quantity
@@ -44,37 +62,47 @@ class Pagination(Generic[T]):
         return data
 
     def get_next_page_elements(self) -> list[T]:
-        if self._page_index == len(self._data):
+        if self._page_index >= len(self._data):
             return []
         
-        index = self._page_index
+        index = self._page_index + self._quantity
         data = []
 
-        if index + self._quantity <= len(self._data):
-            data = self._data[index:self._quantity:1]
-            self._page_index = index + self._quantity
+        if index <= len(self._data):
+            self._page_index = index
+            page_start_index = self._get_page_start_index()
+            data = self._data[page_start_index:page_start_index+self._quantity:1]
         else:
-            remaining_quantity = (index + self._quantity) - len(self._data)
-            data = self._data[index:remaining_quantity:1]
-            self._page_index = index + remaining_quantity
+            remaining_quantity = index - (index - len(self._data))
+            self._page_index = self._page_index + remaining_quantity
+            page_start_index = self._get_page_start_index()
+            data = self._data[page_start_index:page_start_index+remaining_quantity:1]
+
+        if self._page_index > len(self._data):
+            self._page_index = len(self._data)
 
         return data
 
     def get_previous_page_elements(self) -> list[T]:
-        if self._page_index == 0:
+        if self._page_index <= 0:
             return []
         
         index = self._page_index + 1
-        page_start_index = self._get_page_start_index()
         page_original_array_index = self._page_index
         data = []
 
         if index >= self._quantity:
-            data = self._data[page_start_index:self._quantity:1]
             self._page_index = page_original_array_index - self._quantity
+            if self._page_index < 0:
+                self._page_index = 0
+            page_start_index = self._get_page_start_index()
+            data = self._data[page_start_index:page_start_index+self._quantity:1]
         else:
+            self._page_index = 0
             remaining_quantity = index
-            data = self._data[page_start_index:remaining_quantity:1]
+            data = self._data[self._page_index:self._page_index+remaining_quantity:1]
+
+        if self._page_index < 0:
             self._page_index = 0
 
         return data
