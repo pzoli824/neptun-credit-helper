@@ -1,3 +1,4 @@
+from typing import NamedTuple
 from rich.console import Console, Group
 from rich.layout import Layout
 from rich import print
@@ -12,14 +13,21 @@ import os
 import logging
 from pkg.models.auth import LoginCredentials
 from pkg.models.course import REQUIRED_CREDIT
+from pkg.models.pagination import Pagination
 from pkg.models.student import Student
 from pkg.providers.neptun import University
+
+
+class DataLayout(NamedTuple):
+    layout: Layout
+    table: Table
 
 class UITerminal:
 
     def __init__(self, student: Student):
         self._console = Console()
         self._student = student
+        self._all_course_pagination = Pagination(student.all_courses.getLeafNodesData())
 
     @staticmethod
     def get_login_credentials() -> LoginCredentials:
@@ -30,37 +38,45 @@ class UITerminal:
 
     def home(self):
         self._console.clear()
-        main_layout = Layout()
 
-        data_layout = Layout(self._get_courses_in_table(), name="data")
+        data_layout, table = self._get_data_layout_and_table()
 
-        main_layout.split_column(
-            Layout(name="informations"),
-            Align.center(data_layout, vertical="middle")
-        )
+        table_header_size = 3
+        table_footer_size = 1
+        data_layout_title_size = 1
 
-        commands_layout = Layout(self._get_commands(), name="commands")
-        personal_info_layout = Layout(self._get_personal_informations(), name="personal_info")
+        display_row_number = (self._console.height / 2) - (table_header_size + table_footer_size + data_layout_title_size)
+        quantity = 0
+        
+        courses = self._all_course_pagination
+        for course in courses:
+            table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
+            data_layout.update(table)
+            quantity += 1
+            if table.row_count >= display_row_number:
+                courses.set_quantity(quantity)
+                break
 
-        main_layout["informations"].split_row(
-            commands_layout,
-            personal_info_layout,
-        )     
-
-        print(main_layout)
+        self._console.clear()
+        print(self._get_home_layout(self._get_informations_layout(), data_layout))
 
         self._listen_user_input()
-
+    
     def _listen_user_input(self):
+        #TODO: add some logic so if a key is pressed, the logic behind that key press should only run once
         while True:
             try:
                 if keyboard.is_pressed('esc'):
                     break
+                if keyboard.is_pressed('right arrow'):
+                    self._home_courses_next_page()
+                if keyboard.is_pressed('left arrow'):
+                    self._home_courses_previous_page()    
             except:
                 break
         
         self._clear_system_console()
-   
+
     def _clear_system_console(self):
         operation_system = platform.system()
         match operation_system:
@@ -95,7 +111,7 @@ class UITerminal:
         title="Személyes adatok"
         )
 
-    def _get_courses_in_table(self):
+    def _get_courses_table_with_header(self):
         table = Table(expand=True, title="Kurzus adatok")
 
         table.add_column("Kód", justify="center", style="cyan", no_wrap=True)
@@ -106,16 +122,56 @@ class UITerminal:
         table.add_column("Típus", justify="center", style="green")
         table.add_column("Eredmény", justify="center", style="green")
 
-        courses = self._student.all_courses.getLeafNodesData()
-
-        table_header_size = 3
-        table_footer_size = 1
-        data_layout_title_size = 1
-
-        display_row_number = (self._console.height / 2) - (table_header_size + table_footer_size + data_layout_title_size)
-        for course in courses:
-            table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
-            if table.row_count >= display_row_number:
-                break
-
         return table
+    
+    def _get_home_layout(self, informations_layout: Layout, data_layout: Layout) -> Layout:
+        home_layout = Layout()
+        home_layout.split_column(
+            informations_layout,
+            data_layout
+        )
+        return home_layout
+
+    def _get_informations_layout(self) -> Layout:
+        informations_layout = Layout(name="informations")
+
+        commands_layout = Layout(self._get_commands(), name="commands")
+        personal_info_layout = Layout(self._get_personal_informations(), name="personal_info")
+
+        informations_layout.split_row(commands_layout, personal_info_layout)
+        return informations_layout
+    
+    def _get_data_layout_and_table(self) -> DataLayout:
+        table = self._get_courses_table_with_header()
+        data_layout = Layout(table, name="data")
+        return DataLayout(layout=data_layout, table=table)
+
+    def _home_courses_next_page(self):
+        data_layout, table = self._get_data_layout_and_table()
+
+        next_courses = self._all_course_pagination.get_next_page_elements()
+
+        if len(next_courses) == 0:
+            return
+
+        for course in next_courses:
+            table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
+            data_layout.update(table)
+        
+        self._console.clear()
+        print(self._get_home_layout(self._get_informations_layout(), data_layout))
+
+    def _home_courses_previous_page(self):
+        data_layout, table = self._get_data_layout_and_table()
+
+        previous_courses = self._all_course_pagination.get_previous_page_elements()
+
+        if len(previous_courses) == 0:
+            return
+
+        for course in previous_courses:
+            table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
+            data_layout.update(table)
+        
+        self._console.clear()
+        print(self._get_home_layout(self._get_informations_layout(), data_layout))
