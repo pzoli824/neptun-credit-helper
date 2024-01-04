@@ -7,7 +7,6 @@ from rich.panel import Panel
 from rich.text import Text
 from rich.prompt import Prompt
 from rich.table import Table
-from rich.align import Align
 import keyboard
 import platform
 import os
@@ -59,9 +58,7 @@ class UITerminal:
                 courses.set_quantity(quantity)
                 break
 
-        self._console.clear()
-        print(self._get_home_layout(self._get_informations_layout(), data_layout))
-
+        self._console.print(self._get_home_layout(self._get_informations_layout(), data_layout))
         self._listen_user_input()
     
     def _listen_user_input(self):
