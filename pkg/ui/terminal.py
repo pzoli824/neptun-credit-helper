@@ -1,3 +1,4 @@
+import time
 from typing import NamedTuple
 from rich.console import Console, Group
 from rich.layout import Layout
@@ -17,6 +18,7 @@ from pkg.models.pagination import Pagination
 from pkg.models.student import Student
 from pkg.providers.neptun import University
 
+WAIT_TIME_AFTER_KEY_PRESS = 0.2
 
 class DataLayout(NamedTuple):
     layout: Layout
@@ -63,15 +65,16 @@ class UITerminal:
         self._listen_user_input()
     
     def _listen_user_input(self):
-        #TODO: add some logic so if a key is pressed, the logic behind that key press should only run once
         while True:
             try:
                 if keyboard.is_pressed('esc'):
                     break
                 if keyboard.is_pressed('right arrow'):
                     self._home_courses_next_page()
+                    time.sleep(WAIT_TIME_AFTER_KEY_PRESS)
                 if keyboard.is_pressed('left arrow'):
                     self._home_courses_previous_page()    
+                    time.sleep(WAIT_TIME_AFTER_KEY_PRESS)
             except:
                 break
         
