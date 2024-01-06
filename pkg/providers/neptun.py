@@ -1,5 +1,4 @@
 import logging
-import traceback
 
 from bs4 import BeautifulSoup
 from pkg.models.course import Course, EnrolledCourse
@@ -8,7 +7,6 @@ from pkg.providers.browser import Browser
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 
 class University:
     SZTE = "szte"
@@ -29,6 +27,7 @@ class NeptunPageElement:
     FILTER_BY_ALL_COURSES_CHECK_BOX_ID = "upFilter_rbtnCompleted_0"
     QUERY_ALL_COURSES_INFORMATION_BUTTON_ID = "upFilter_expandedsearchbutton"
     SAMPLE_CURRICULUM_RETRIEVED_TABLE_ID = "head_Code"
+    SAMPLE_CURRICULUM_RETRIEVED_COURSES_TABLE_BODY_ID = "function_table_body"
     SAMPLE_CURRICULUM_COURSE_TABLE_TOP_ROWS_XPATH = "//*[contains(@id, 'tr__')]"
     SAMPLE_CURRICULUM_COURSE_TABLE_ROW_COLUMNS_XPATH = ".//td"
 
@@ -106,8 +105,7 @@ class Neptun:
 
             html = self._browser.page_source
             soup = BeautifulSoup(html, "html5lib")
-            #TODO rename magic string function_table_body???
-            table_body = soup.find('td', id='function_table_body')
+            table_body = soup.find('td', id=NeptunPageElement.SAMPLE_CURRICULUM_RETRIEVED_COURSES_TABLE_BODY_ID)
             soup = BeautifulSoup(str(table_body), "html5lib")
             lowest_level = self._get_table_lowest_row_level(soup, 1)
             tree = self._get_table_rows_in_array_from_lowest_level_to_highest(soup, lowest_level)
@@ -131,13 +129,17 @@ class Neptun:
                 columns = row.select('td')
                 course = Course.create_course_from_columns(columns, parent_row_id, row_id)
                 current_course_node = Node[Course](course)
-                for previous_course_node in previous_course_nodes:
-                    if course.row_id == previous_course_node.data.parent_row_id:
-                        current_course_node.appendChildNodes(previous_course_node)                    
-                    current_course_nodes.append(current_course_node)
+                if len(previous_course_nodes) == 0:
+                    previous_course_nodes.append(current_course_node)
+                    continue
+                else:
+                    for previous_course_node in previous_course_nodes:
+                        if course.row_id == previous_course_node.data.parent_row_id:
+                            current_course_node.appendChildNodes(previous_course_node)
 
-            previous_course_nodes = []
-            previous_course_nodes = current_course_nodes[:]
+                    current_course_nodes.append(current_course_node)
+            
+            previous_course_nodes = current_course_nodes
 
         tree = Tree[Course](Course("", "", "", "", "", "", "", "", "", ""))
         tree.appendChildNodes(*previous_course_nodes)
