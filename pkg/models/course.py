@@ -43,7 +43,7 @@ class EnrolledCourse:
     @staticmethod
     def _get_data_from_column(columns: any, type: ColumnsCourseField) -> str:
         if len(columns) == 0 or len(columns) <= type.value:
-            logging.warn(f"enrolled course {type.name} value is set to empty because of column short length")
+            logging.warning(f"enrolled course {type.name} value is set to empty because of column short length")
             return ""
         return columns[type.value].text
 
