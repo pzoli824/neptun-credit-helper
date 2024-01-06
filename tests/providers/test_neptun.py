@@ -29,11 +29,10 @@ class TestNeptun:
         mock.driver.get.assert_called_with(expected_url)
         assert login_button_mock.click.call_count is 1
 
-    @pytest.mark.skip(reason="Fix test later")
     def test_neptun_get_enrolled_courses_in_current_semester(self):
         neptun_mock = Mock()
         expected_url = f"{self.szte_base_url}{NeptunPage.COURSES}"
-        neptun_mock.driver.page_source = '<html><tr id="tr__321"><td>1</td></tr></html>'
+        neptun_mock.driver.page_source = '<!DOCTYPE html><html><head><title>"Page Title"</title></head><body><table><tr id="tr__321"><td>1</td></tr></table></body></html>'
         neptun = Neptun(neptun_mock, University.SZTE)
 
         courses = neptun.get_enrolled_courses_in_current_semester()
