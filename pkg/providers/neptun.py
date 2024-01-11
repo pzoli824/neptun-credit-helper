@@ -107,7 +107,7 @@ class Neptun:
             soup = BeautifulSoup(html, "html5lib")
             table_body = soup.find('td', id=NeptunPageElement.SAMPLE_CURRICULUM_RETRIEVED_COURSES_TABLE_BODY_ID)
             soup = BeautifulSoup(str(table_body), "html5lib")
-            lowest_level = self._get_table_lowest_row_level(soup, 1)
+            lowest_level = self._get_table_lowest_row_level(soup)
             tree = self._get_table_rows_in_array_from_lowest_level_to_highest(soup, lowest_level)
             return tree
 
@@ -129,19 +129,16 @@ class Neptun:
                 columns = row.select('td')
                 course = Course.create_course_from_columns(columns, parent_row_id, row_id)
                 current_course_node = Node[Course](course)
-                if len(previous_course_nodes) == 0:
-                    previous_course_nodes.append(current_course_node)
-                    continue
-                else:
-                    for previous_course_node in previous_course_nodes:
-                        if course.row_id == previous_course_node.data.parent_row_id:
-                            current_course_node.appendChildNodes(previous_course_node)
+                for previous_course_node in previous_course_nodes:
+                    if course.row_id == previous_course_node.data.parent_row_id:
+                        current_course_node.appendChildNodes(previous_course_node)
 
-                    current_course_nodes.append(current_course_node)
+                current_course_nodes.append(current_course_node)
             
-            previous_course_nodes = current_course_nodes
+            if len(current_course_nodes) != 0:
+                previous_course_nodes = current_course_nodes[:]
 
-        tree = Tree[Course](Course("", "", "", "", "", "", "", "", "", ""))
+        tree = Tree[Course](Course())
         tree.appendChildNodes(*previous_course_nodes)
         return tree
 
@@ -166,7 +163,7 @@ class Neptun:
              
         return parent_row_id           
 
-    def _get_table_lowest_row_level(self, soup: BeautifulSoup, level: int) -> int:
+    def _get_table_lowest_row_level(self, soup: BeautifulSoup, level: int = 1) -> int:
             row_level_id = "tr__"
             if level > 1: 
                 row_level_id = f"tr{level}__"
