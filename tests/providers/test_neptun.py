@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import Mock
 
-from pkg.providers.neptun import Neptun, NeptunPage, NeptunPageElement, University
+from pkg.providers.neptun import Neptun, NeptunPage, University
 
 class TestNeptun:
 
@@ -61,7 +61,6 @@ class TestNeptun:
         neptun_mock.driver.get.assert_called_with(expected_url)
         assert len(courses_in_tree.getLeafNodesData()) is 1
 
-    #@pytest.mark.skip("fix test above first")
     def test_neptun_get_all_course_informations_return_with_two_leaf_course(self):
         neptun_mock = Mock()
         expected_url = f"{self.szte_base_url}{NeptunPage.SAMPLE_CURRICULUM}"
