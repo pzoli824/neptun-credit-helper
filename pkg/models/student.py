@@ -31,7 +31,7 @@ class Student:
         self._current_courses = current_courses
 
     def calculate_finished_credits(self) -> int:
-        courses = self._all_courses.getLeafNodesData()
+        courses = set(self._all_courses.getLeafNodesData())
         finished_credits = 0
         for course in courses:
             if course.credit != '' and course.result != '' and self._has_been_enrolled_to_course(course):
