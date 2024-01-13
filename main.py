@@ -1,19 +1,49 @@
 import logging
-import traceback
+import click
+import sys
+from data.student import data_test_student
+from pkg.models.student import Student
 from pkg.providers.browser import BrowserFactory, BrowserType
-from pkg.providers.neptun import Neptun, University
+from pkg.providers.neptun import Neptun
+from pkg.ui.terminal import UITerminal
 
-browser = BrowserFactory.create_browser(BrowserType.CHROME)
-driver = browser.driver
+sys.setrecursionlimit(2000)
 
-neptun = Neptun(browser, University.SZTE)
-neptun.login("username", "password")
-try:
-    neptun.get_all_course_informations()
-    neptun.get_enrolled_courses_in_current_semester()
+@click.group()
+def cli():
+    pass
 
-except Exception as e:
-    logging.error(traceback.format_exc())
+@cli.command()
+def run():
+    '''Runs the application in production mode'''
+    browser = BrowserFactory.create_browser(BrowserType.CHROME)
 
-finally:
-    neptun.logout_and_quit()
+    credentials = UITerminal.get_login_credentials()
+    neptun = Neptun(browser, credentials.university)
+    neptun.login(credentials.username, credentials.password)
+
+    student = Student("test name")
+    #TODO get student name too
+    try:
+        student.all_courses = neptun.get_all_course_informations()
+        student.current_courses = neptun.get_enrolled_courses_in_current_semester()
+
+    except Exception as e:
+        logging.error(e)
+
+    finally:
+        neptun.logout_and_quit()
+        ui = UITerminal(student)
+        ui.home()
+
+
+
+@cli.command()
+def test_run():
+    '''Runs the application in test mode, with test data'''
+    ui = UITerminal(data_test_student())
+    ui.home()
+
+
+if __name__ == '__main__':
+    cli()

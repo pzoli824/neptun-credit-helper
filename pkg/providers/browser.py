@@ -1,6 +1,7 @@
 import abc
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+import chromedriver_autoinstaller
 
 class UnknownBrowserTypeException(Exception):
     "Raised when the browser type is not supported/unknown"
@@ -20,6 +21,7 @@ class Browser(abc.ABC):
 class ChromeBrowser(Browser):
 
     def __init__(self) -> None:
+        chromedriver_autoinstaller.install()
         self._driver = webdriver.Chrome(self._get_chrome_options())
 
     def _get_chrome_options(self) -> Options:

@@ -1,6 +1,8 @@
 import logging
 from enum import Enum
 
+REQUIRED_CREDIT = 180
+
 class ColumnsCourseField(Enum):
     CODE = 1
     NAME = 2
@@ -41,9 +43,25 @@ class EnrolledCourse:
     @staticmethod
     def _get_data_from_column(columns: any, type: ColumnsCourseField) -> str:
         if len(columns) == 0 or len(columns) <= type.value:
-            logging.warn(f"enrolled course {type.name} value is set to empty because of column short length")
+            logging.warning(f"enrolled course {type.name} value is set to empty because of column short length")
             return ""
         return columns[type.value].text
+
+    @property
+    def code(self) -> str:
+        return self._code
+
+    @property
+    def name(self) -> str:
+        return self._name    
+
+    @property
+    def credit(self) -> str:
+        return self._credit
+
+    @property
+    def course_enrollment_times(self) -> str:
+        return self._course_enrollment_times
 
     def __str__(self):
         return f'code: {self._code}, name: {self._name}, credit: {self._credit}, course_enrollment_times: {self._course_enrollment_times}'
@@ -54,9 +72,9 @@ class Course:
 
     def __init__(
             self, 
-            code: str, name: str, credit: str, recommended_semester: str,
-            sample_curriculum: str, course_group_code: str, course_group_name: str,
-            course_type: str, result: str, course_enrollment_times: str
+            code: str = "", name: str = "", credit: str = "", recommended_semester: str = "",
+            sample_curriculum: str = "", course_group_code: str = "", course_group_name: str = "",
+            course_type: str = "", result: str = "", course_enrollment_times: str = ""
             ) -> None:
         self._code = code
         self._name = name
@@ -90,7 +108,7 @@ class Course:
     @staticmethod
     def _get_data_from_column(columns: any, type: ColumnsCourseField) -> str:
         if len(columns) == 0 or len(columns) <= type.value:
-            logging.warn(f"course {type.name} value is set to empty because of column short length")
+            logging.warning(f"course {type.name} value is set to empty because of column short length")
             return ""
         return columns[type.value].text
 
@@ -110,6 +128,45 @@ class Course:
     def row_id(self, row_id: str): 
         self._row_id = row_id     
 
+    @property
+    def code(self) -> str:
+        return self._code
+    
+    @property
+    def name(self) -> str:
+        return self._name
+    
+    @property
+    def credit(self) -> str:
+        return self._credit
+    
+    @property
+    def course_enrollment_times(self) -> str:
+        return self._course_enrollment_times
+
+    @property
+    def course_group_code(self) -> str:
+        return self._course_group_code
+
+    @property
+    def course_group_name(self) -> str:
+        return self._course_group_name
+
+    @property
+    def course_type(self) -> str:
+        return self._course_type
+
+    @property
+    def recommended_semester(self) -> str:
+        return self._recommended_semester
+
+    @property
+    def result(self) -> str:
+        return self._result.replace('Teljesítés féléve:','').strip()
+
+    @property
+    def sample_curriculum(self) -> str:
+        return self._sample_curriculum
 
     def __str__(self):
         return f'code: {self._code}, name: {self._name}, credit: {self._credit}, recommended_semester: {self._recommended_semester}, sample_curriculum: {self._sample_curriculum}, course_group_code: {self._course_group_code}, course_group_name: {self._course_group_name}, course_type: {self._course_type}, outcome: {self._result}, course_enrollment_times: {self._course_enrollment_times}'
