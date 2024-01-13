@@ -75,9 +75,14 @@ class TestPagination:
         for i in range(len(data)):
             assert data[i] is expected_result[i]             
 
-    def test_pagination_iterator(self, setup_data):
+    def test_pagination_iterator(self, setup_data: list[int]):
         number_pages = Pagination(setup_data, 5)
         expected_result = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
         for i in range(len(number_pages)):
-            assert number_pages[i] is expected_result[i]        
+            assert number_pages[i] is expected_result[i]
+
+        incr = 0
+        for item in number_pages:
+            assert item is expected_result[incr]
+            incr += 1
