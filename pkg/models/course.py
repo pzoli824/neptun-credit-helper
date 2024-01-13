@@ -87,6 +87,12 @@ class Course:
         self._result = result
         self._course_enrollment_times = course_enrollment_times
 
+    def __eq__(self, other: 'Course'):
+        return self.code == other.code
+
+    def __hash__(self):
+        return hash((self.code))
+
     @staticmethod
     def create_course_from_columns(columns: any, parent_row_id: str = '', row_id: str = '') -> 'Course':
         c = Course(
