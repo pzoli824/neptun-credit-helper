@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import Mock
+from pkg.models.course import Course
 
 from pkg.providers.neptun import Neptun, NeptunPage, University
 
@@ -55,22 +56,35 @@ class TestNeptun:
         expected_url = f"{self.szte_base_url}{NeptunPage.SAMPLE_CURRICULUM}"
         neptun_mock.driver.page_source = self._create_html_mock_for_get_all_course_informations()
         neptun = Neptun(neptun_mock, University.SZTE)
+        expected_courses = [
+            Course("code_2", "name_2", "credit_2", "recommended_semester_2", "sample_curriculum_2", "course_group_code_2", "course_group_name_2", "course_type_2", "result_2", "course_enrollment_times_2"),
+        ]
 
         courses_in_tree = neptun.get_all_course_informations()
+        courses = courses_in_tree.getLeafNodesData()
 
         neptun_mock.driver.get.assert_called_with(expected_url)
-        assert len(courses_in_tree.getLeafNodesData()) is 1
+        assert len(courses) is 1
+        for i in range(len(courses)):
+            assert str(courses[i]) == str(expected_courses[i])
 
     def test_neptun_get_all_course_informations_return_with_two_leaf_course(self):
         neptun_mock = Mock()
         expected_url = f"{self.szte_base_url}{NeptunPage.SAMPLE_CURRICULUM}"
         neptun_mock.driver.page_source = self._create_html_mock_for_get_all_course_informations(2)
         neptun = Neptun(neptun_mock, University.SZTE)
+        expected_courses = [
+            Course("code_2", "name_2", "credit_2", "recommended_semester_2", "sample_curriculum_2", "course_group_code_2", "course_group_name_2", "course_type_2", "result_2", "course_enrollment_times_2"),
+            Course("code_3", "name_3", "credit_3", "recommended_semester_3", "sample_curriculum_3", "course_group_code_3", "course_group_name_3", "course_type_3", "result_3", "course_enrollment_times_3")
+        ]
 
         courses_in_tree = neptun.get_all_course_informations()
+        courses = courses_in_tree.getLeafNodesData()
 
         neptun_mock.driver.get.assert_called_with(expected_url)
-        assert len(courses_in_tree.getLeafNodesData()) is 2        
+        assert len(courses) is 2        
+        for i in range(len(courses)):
+            assert str(courses[i]) == str(expected_courses[i])
 
     def _create_html_mock_for_get_all_course_informations(self, leaf_nodes_count: int = 1) -> str:
         second_leaf_course_string = ""
@@ -86,7 +100,7 @@ class TestNeptun:
                     <td>course_group_code_3</td>
                     <td>course_group_name_3</td>
                     <td>course_type_3</td>
-                    <td>result_3</td>
+                    <td><div class="tooltipDetails">Some tooltip: </div>result_3</td>
                     <td>course_enrollment_times_3</td>
                 </tr>
             """
@@ -115,7 +129,7 @@ class TestNeptun:
                             <td>course_group_code_1</td>
                             <td>course_group_name_1</td>
                             <td>course_type_1</td>
-                            <td>result_1</td>
+                            <td><div class="tooltipDetails">Some tooltip: </div>result_1</td>
                             <td>course_enrollment_times_1</td>
                         </tr>
                         <tr id="subrow_anything_1">
@@ -131,7 +145,7 @@ class TestNeptun:
                                         <td>course_group_code_2</td>
                                         <td>course_group_name_2</td>
                                         <td>course_type_2</td>
-                                        <td>result_2</td>
+                                        <td><div class="tooltipDetails">Some tooltip: </div>result_2</td>
                                         <td>course_enrollment_times_2</td>
                                     </tr>
                                     {second_leaf_course}

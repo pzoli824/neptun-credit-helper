@@ -107,6 +107,9 @@ class Neptun:
             soup = BeautifulSoup(html, "html5lib")
             table_body = soup.find('td', id=NeptunPageElement.SAMPLE_CURRICULUM_RETRIEVED_COURSES_TABLE_BODY_ID)
             soup = BeautifulSoup(str(table_body), "html5lib")
+            for div in soup.find_all("div", {'class': 'tooltipDetails'}):
+                div.decompose()
+
             lowest_level = self._get_table_lowest_row_level(soup)
             tree = self._get_table_rows_in_array_from_lowest_level_to_highest(soup, lowest_level)
             return tree
