@@ -162,11 +162,11 @@ class Course:
 
     @property
     def result(self) -> str:
-        return self._result.replace('Teljesítés féléve:','').strip()
+        return self._result.strip()
 
     @property
     def sample_curriculum(self) -> str:
         return self._sample_curriculum
 
     def __str__(self):
-        return f'code: {self._code}, name: {self._name}, credit: {self._credit}, recommended_semester: {self._recommended_semester}, sample_curriculum: {self._sample_curriculum}, course_group_code: {self._course_group_code}, course_group_name: {self._course_group_name}, course_type: {self._course_type}, outcome: {self._result}, course_enrollment_times: {self._course_enrollment_times}'
+        return f'code: {self._code}, name: {self._name}, credit: {self._credit}, recommended_semester: {self._recommended_semester}, sample_curriculum: {self._sample_curriculum}, course_group_code: {self._course_group_code}, course_group_name: {self._course_group_name}, course_type: {self._course_type}, result: {self._result}, course_enrollment_times: {self._course_enrollment_times}'
