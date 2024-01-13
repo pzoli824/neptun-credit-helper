@@ -34,7 +34,7 @@ class Student:
         courses = self._all_courses.getLeafNodesData()
         finished_credits = 0
         for course in courses:
-            if course.credit != '' and course.result != '':
+            if course.credit != '' and course.result != '' and self._has_been_enrolled_to_course(course):
                 finished_credits += int(course.credit)
 
         return finished_credits    
@@ -46,3 +46,13 @@ class Student:
                 credits += int(current_course.credit)
 
         return credits    
+
+    def _has_been_enrolled_to_course(self, course: Course) -> bool:
+        enrollment_times = ""
+        try:
+            enrollment_times = int(course.course_enrollment_times)
+
+        except Exception as e:
+            return False
+        
+        return enrollment_times > 0
