@@ -196,4 +196,4 @@ class Course:
         return False        
     
     def is_optional_to_choose(self) -> bool:
-        return "Szabadon választható" in self._course_type
+        return ("Szabadon választható" in self._course_type) or ("Optional" in self._course_type)

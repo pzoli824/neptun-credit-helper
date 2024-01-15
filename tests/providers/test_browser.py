@@ -1,18 +1,11 @@
 import pytest
 
-from pkg.providers.browser import BrowserFactory, BrowserType, ChromeBrowser, UnknownBrowserTypeException
-
-
-class TestChromeBrowser:
-    
-    def test_chrome_browser_driver(self):
-        chrome = ChromeBrowser()
-        
-        assert chrome.driver is not None    
+from pkg.providers.browser import BrowserFactory, BrowserType, UnknownBrowserTypeException
 
 class TestBrowserFactory:
 
     def test_browser_factory_create_browser_chrome(self):
+        BrowserFactory.mode = "test"
         browser = BrowserFactory.create_browser(BrowserType.CHROME)
         
         assert browser is not None

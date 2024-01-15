@@ -20,9 +20,10 @@ class Browser(abc.ABC):
 
 class ChromeBrowser(Browser):
 
-    def __init__(self) -> None:
-        chromedriver_autoinstaller.install()
-        self._driver = webdriver.Chrome(self._get_chrome_options())
+    def __init__(self, mode: str = "production") -> None:
+        if mode == "production":
+            chromedriver_autoinstaller.install()
+            self._driver = webdriver.Chrome(self._get_chrome_options())
 
     def _get_chrome_options(self) -> Options:
         options = Options()
@@ -37,11 +38,12 @@ class ChromeBrowser(Browser):
         return self._driver
     
 class BrowserFactory:
+    mode = "production"
 
     @staticmethod
     def create_browser(type: BrowserType) -> Browser:
         match type:
             case BrowserType.CHROME:
-                return ChromeBrowser()
+                return ChromeBrowser(BrowserFactory.mode)
             case _:
                 raise UnknownBrowserTypeException

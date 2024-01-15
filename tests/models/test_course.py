@@ -141,7 +141,9 @@ class TestCourse:
     def test_course_is_optional_to_choose(self):
         c1 = Course(course_type="Szabadon választható")        
         c2 = Course(course_type="Smth")        
+        c3 = Course(course_type="Optional")        
 
         assert c1.is_optional_to_choose() is True        
         assert c2.is_optional_to_choose() is False        
+        assert c3.is_optional_to_choose() is True        
                         

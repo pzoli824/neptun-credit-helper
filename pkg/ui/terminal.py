@@ -11,6 +11,8 @@ import keyboard
 import platform
 import os
 import logging
+from pkg.localization.localization import Localization
+from pkg.localization.texts import ACQUIRED_CREDITS, ACQUIRED_CREDITS_AFTER_CURRENT_SEMESTER, AFTER_ESC_TEXT, CHOOSE_UNIVERSITY, CODE, COMMANDS, COURSE_INFORMATIONS, CREDIT, CREDITS, CREDITS_UNDER_PROGRESS_IN_CURRENT_SEMESTER, ENROLLMENT_TIMES, ESC, GIVE_PASSWORD, GIVE_USERNAME, OPTIONAL_COURSES_ARE_NOT_CALCULATED, PERSONAL_INFORMATIONS, PRESS_KEY, RECOMMENDED_SEMESTER, REQUIRED_CREDITS, RESULT, TEXT_COMMANDS, NAME, TYPE
 from pkg.models.auth import LoginCredentials
 from pkg.models.course import ALL_REQUIRED_CREDIT
 from pkg.models.pagination import Pagination
@@ -25,16 +27,17 @@ class DataLayout(NamedTuple):
 
 class UITerminal:
 
-    def __init__(self, student: Student):
+    def __init__(self, student: Student, loc: Localization):
         self._console = Console()
         self._student = student
         self._all_course_pagination = Pagination(student.all_courses.getLeafNodesData())
+        self._loc = loc
 
     @staticmethod
-    def get_login_credentials() -> LoginCredentials:
-        university = Prompt.ask("Válassz egyetemet", choices=[University.SZTE])
-        username = Prompt.ask("Add meg a felhasználóneved")
-        password = Prompt.ask("Add meg a jelszavad", password=True)
+    def get_login_credentials(loc: Localization) -> LoginCredentials:
+        university = Prompt.ask(loc[CHOOSE_UNIVERSITY], choices=[University.SZTE])
+        username = Prompt.ask(loc[GIVE_USERNAME])
+        password = Prompt.ask(loc[GIVE_PASSWORD], password=True)
         return LoginCredentials(username, password, university)
 
     def home(self):
@@ -88,11 +91,14 @@ class UITerminal:
                 logging.warning("Failed to clear system console")
 
     def _get_commands(self):
+        press_key_text = self._loc[COMMANDS][PRESS_KEY]
+        esc_text = self._loc[COMMANDS][ESC]
+        after_esc_text = self._loc[COMMANDS][AFTER_ESC_TEXT]
         return Panel(
             Group(
-                Text.assemble("- Nyomd meg az ", ("ESC", "bold red"), " billentyűt a kilépéshez!")
+                Text.assemble(f"{press_key_text} ", (esc_text, "bold red"), f" {after_esc_text}")
             ),
-        title="Parancsok"
+        title=self._loc[TEXT_COMMANDS]
         )
 
     def _get_personal_informations(self):
@@ -101,27 +107,27 @@ class UITerminal:
         current_semester_credits = self._student.calculate_current_semester_credits()
         return Panel(
             Group(
-                Text.assemble("Név: ", (name, "bold yellow")),
-                Text.assemble("Kreditek: ", (str(credits), "bold red"), "/", str(ALL_REQUIRED_CREDIT)),
-                Text.assemble("Szükséges kreditek: ", (str(ALL_REQUIRED_CREDIT-credits), "bold red")),
-                Text.assemble("Eddig a megszerzett kreditek: ", (str(credits), "bold green")),
-                Text.assemble("Ebben a szemeszterben csinált kreditek: ", (str(current_semester_credits), "bold yellow")),
-                Text.assemble("Kreditek jelenlegi szemeszterrel bezáróan: ", (str(credits+current_semester_credits), "bold yellow")),
-                Text.assemble(("Az elvégzett Szabadon választható tárgyak kreditjei nincsenek a kimutatott adatokba bele számolva!", "bold red"))
+                Text.assemble(f"{self._loc[NAME]}: ", (name, "bold yellow")),
+                Text.assemble(f"{self._loc[CREDITS]}: ", (str(credits), "bold red"), "/", str(ALL_REQUIRED_CREDIT)),
+                Text.assemble(f"{self._loc[REQUIRED_CREDITS]}: ", (str(ALL_REQUIRED_CREDIT-credits), "bold red")),
+                Text.assemble(f"{self._loc[ACQUIRED_CREDITS]}: ", (str(credits), "bold green")),
+                Text.assemble(f"{self._loc[CREDITS_UNDER_PROGRESS_IN_CURRENT_SEMESTER]}: ", (str(current_semester_credits), "bold yellow")),
+                Text.assemble(f"{self._loc[ACQUIRED_CREDITS_AFTER_CURRENT_SEMESTER]}: ", (str(credits+current_semester_credits), "bold yellow")),
+                Text.assemble((f"{self._loc[OPTIONAL_COURSES_ARE_NOT_CALCULATED]}!", "bold red"))
             ),
-        title="Személyes adatok"
+        title=self._loc[PERSONAL_INFORMATIONS]
         )
 
     def _get_courses_table_with_header(self):
-        table = Table(expand=True, title="Kurzus adatok")
+        table = Table(expand=True, title=self._loc[COURSE_INFORMATIONS])
 
-        table.add_column("Kód", justify="center", style="cyan", no_wrap=True)
-        table.add_column("Név", justify="center", style="magenta")
-        table.add_column("Kredit", justify="center", style="green")
-        table.add_column("Ajánlott szemeszter", justify="center", style="green")
-        table.add_column("Felvételek száma", justify="center", style="green")
-        table.add_column("Típus", justify="center", style="green")
-        table.add_column("Eredmény", justify="center", style="green")
+        table.add_column(self._loc[CODE], justify="center", style="cyan", no_wrap=True)
+        table.add_column(self._loc[NAME], justify="center", style="magenta")
+        table.add_column(self._loc[CREDIT], justify="center", style="green")
+        table.add_column(self._loc[RECOMMENDED_SEMESTER], justify="center", style="green")
+        table.add_column(self._loc[ENROLLMENT_TIMES], justify="center", style="green")
+        table.add_column(self._loc[TYPE], justify="center", style="green")
+        table.add_column(self._loc[RESULT], justify="center", style="green")
 
         return table
     
