@@ -30,7 +30,7 @@ class UITerminal:
     def __init__(self, student: Student, loc: Localization):
         self._console = Console()
         self._student = student
-        self._all_course_pagination = Pagination(student.all_courses.getLeafNodesData())
+        self._all_course_pagination = Pagination(student.all_courses.get_leaf_nodes_data())
         self._loc = loc
 
     @staticmethod

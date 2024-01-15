@@ -18,7 +18,7 @@ def setup_courses() -> Tree[Course]:
     n2 = Node(Course(code="2", credit="3", result="(1)", course_enrollment_times="2", course_type="Elective"))
     n3 = Node(Course(code="3", credit="1", result="(5)", course_enrollment_times="1", course_type="Optional"))
     n4 = Node(Course(code="4", credit="2", result="(4)", course_enrollment_times="2", course_type="Elective"))
-    t.appendChildNodes(n1, n2, n3, n4)
+    t.append_child_nodes(n1, n2, n3, n4)
 
     yield t
 

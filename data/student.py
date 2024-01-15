@@ -14,7 +14,7 @@ def data_test_all_course() -> Tree[Course]:
     p2 = Node[Course](Course('', 'Test Parent Courses 2'))
     p3 = Node[Course](Course('', 'Test Parent Courses 3'))
 
-    p1.appendChildNodes(
+    p1.append_child_nodes(
         Node[Course](Course('1', 'Test Course 1', '2', '1', result='Teljesítés féléve: ', course_enrollment_times='')),
         Node[Course](Course('2', 'Test Course 2', '3', '1', result='', course_enrollment_times='')),
         Node[Course](Course('3', 'Test Course 3', '2', '1', result='Teljesítés féléve: Poor (2)', course_enrollment_times='1')),
@@ -24,7 +24,7 @@ def data_test_all_course() -> Tree[Course]:
         Node[Course](Course('7', 'Test Course 7', '2', '3', result='Excellent (5)', course_enrollment_times='1')),
         Node[Course](Course('8', 'Test Course 8', '2', '3', result='Poor (2)', course_enrollment_times='1'))     
     )
-    p2.appendChildNodes(
+    p2.append_child_nodes(
         Node[Course](Course('9', 'Test Course 9', '1', '3', result='Average (3)', course_enrollment_times='3')),
         Node[Course](Course('10', 'Test Course 10', '2', '3', result='', course_enrollment_times='')),
         Node[Course](Course('11', 'Test Course 11', '3', '4', result='', course_enrollment_times='')),
@@ -34,12 +34,12 @@ def data_test_all_course() -> Tree[Course]:
         Node[Course](Course('15', 'Test Course 15', '5', '4', result='', course_enrollment_times=''))
     )
 
-    p3.appendChildNodes(
+    p3.append_child_nodes(
         *data_test_create_node_courses(16,70)
     )
 
     t = Tree[Course](Course())
-    t.appendChildNodes(p1, p2, p3)
+    t.append_child_nodes(p1, p2, p3)
     return t
 
 def data_test_create_node_courses(l: int, h: int) -> list[Node[Course]]:

@@ -10,67 +10,67 @@ class Connections(NamedTuple):
 class Tree(Generic[T]):
 
     def __init__(self, data: T) -> None:
-        self.__node = Node[T](data)
+        self._node = Node[T](data)
 
     @property
-    def rootNode(self) -> 'Node[T]':
-        return self.__node
+    def root_node(self) -> 'Node[T]':
+        return self._node
 
-    def appendChildNodes(self, *nodes: 'Node[T]') -> None:
-        self.__node.appendChildNodes(*nodes)
+    def append_child_nodes(self, *nodes: 'Node[T]') -> None:
+        self._node.append_child_nodes(*nodes)
 
-    def getLeafNodes(self) -> 'list[Node[T]]':
-       return self.__findLeafNodes(self.__node.children[:], list[Node[T]]())
+    def get_leaf_nodes(self) -> 'list[Node[T]]':
+       return self._find_leaf_nodes(self._node.children[:], list[Node[T]]())
 
-    def getLeafNodesData(self) -> list[T]:
-        leafNodes = self.getLeafNodes()
-        return [node.data for node in leafNodes]
+    def get_leaf_nodes_data(self) -> list[T]:
+        leaf_nodes = self.get_leaf_nodes()
+        return [node.data for node in leaf_nodes]
 
-    def __findLeafNodes(self, children: 'list[Node[T]]', leafNodes: 'list[Node[T]]') -> 'list[Node[T]]':
+    def _find_leaf_nodes(self, children: 'list[Node[T]]', leaf_nodes: 'list[Node[T]]') -> 'list[Node[T]]':
         if len(children) == 0:
-            return leafNodes
+            return leaf_nodes
         
-        firstNode = children.pop(0)
-        children.extend(firstNode.children)
+        first_node = children.pop(0)
+        children.extend(first_node.children)
 
-        if len(firstNode.children) == 0:
-            leafNodes.append(firstNode)
+        if len(first_node.children) == 0:
+            leaf_nodes.append(first_node)
 
-        return self.__findLeafNodes(children, leafNodes)
+        return self._find_leaf_nodes(children, leaf_nodes)
 
 
 class Node(Generic[T]):
 
     def __init__(self, data: T) -> None:
-        self.__data = data
-        self.__connections = Connections(None, list[Node[T]]())
+        self._data = data
+        self._connections = Connections(None, list[Node[T]]())
 
     @property
     def data(self) -> T:
-        return self.__data
+        return self._data
     
     @data.setter 
     def data(self, data: T): 
-        self.__data = data
+        self._data = data
 
-    def appendChildNodes(self, *nodes: 'Node[T]') -> None:
+    def append_child_nodes(self, *nodes: 'Node[T]') -> None:
         for node in nodes:
             node.parent = self
-            self.__connections.children.append(node)
+            self._connections.children.append(node)
 
     @property
     def parent(self):
-        return self.__connections.parent  
+        return self._connections.parent  
     
     @parent.setter 
     def parent(self, parent: 'Node[T]'): 
-        self.__connections = Connections(parent, self.__connections.children)
+        self._connections = Connections(parent, self._connections.children)
 
     @property
     def children(self) -> list['Node[T]']:
-        return self.__connections.children       
+        return self._connections.children       
 
     def __str__(self):
-        hasChildren = len(self.__connections.children) > 0 if "YES" else "NO"
-        hasParent = self.__connections.parent != None if "YES" else "NO"
-        return f"This node has children: {hasChildren}, and has parent: {hasParent} " + str(self.data)
+        has_children = len(self._connections.children) > 0 if "YES" else "NO"
+        has_parent = self._connections.parent != None if "YES" else "NO"
+        return f"This node has children: {has_children}, and has parent: {has_parent} " + str(self.data)
