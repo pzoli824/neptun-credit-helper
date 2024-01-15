@@ -9,7 +9,7 @@ class Localization(dict):
 
     def __init__(self, path: str, language: Language) -> None:
         self._language = language
-        with open(path, 'r') as file:
+        with open(path, 'r', encoding='utf8') as file:
             data = yaml.safe_load(file)
             super().update(data)
 
@@ -21,3 +21,11 @@ class Localization(dict):
 
     def __repr__(self):
         return super().__getitem__(self._language).__repr__()
+        
+    @property
+    def language(self):
+        return self._language    
+
+    @language.setter 
+    def language(self, lang: Language):
+        self._language = lang
