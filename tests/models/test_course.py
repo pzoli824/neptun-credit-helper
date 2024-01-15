@@ -105,7 +105,7 @@ class TestCourse:
 
         assert len(courses) is 5
 
-    def test_has_been_enrolled_to_course(self):
+    def test_course_has_been_enrolled_to_course(self):
         test_data = [
             CourseAndExcepted(
                 course=Course("", "", "", "", "", "", "", "", "", "1"),
@@ -128,3 +128,20 @@ class TestCourse:
         for data in test_data:
             result = data.course.has_been_enrolled_to_course()
             assert result is data.expected_has_been_enrolled_to_course        
+
+    def test_course_has_been_completed(self):
+        c1 = Course(result="dummy text")        
+        c2 = Course(result="fail (1)")        
+        c3 = Course(result="okayish (2)")
+
+        assert c1.has_been_completed() is False        
+        assert c2.has_been_completed() is False        
+        assert c3.has_been_completed() is True
+
+    def test_course_is_optional_to_choose(self):
+        c1 = Course(course_type="Szabadon választható")        
+        c2 = Course(course_type="Smth")        
+
+        assert c1.is_optional_to_choose() is True        
+        assert c2.is_optional_to_choose() is False        
+                        
