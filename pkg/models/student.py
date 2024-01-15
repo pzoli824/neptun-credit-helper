@@ -31,10 +31,10 @@ class Student:
         self._current_courses = current_courses
 
     def calculate_finished_credits(self) -> int:
-        courses = self._all_courses.getLeafNodesData()
+        courses = set(self._all_courses.getLeafNodesData())
         finished_credits = 0
         for course in courses:
-            if course.credit != '' and course.result != '':
+            if course.credit != '' and course.result != '' and course.has_been_enrolled_to_course() and course.has_been_completed() and not course.is_optional_to_choose():
                 finished_credits += int(course.credit)
 
         return finished_credits    

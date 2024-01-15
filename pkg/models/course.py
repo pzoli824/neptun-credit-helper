@@ -1,7 +1,7 @@
 import logging
 from enum import Enum
 
-REQUIRED_CREDIT = 180
+ALL_REQUIRED_CREDIT = 180
 
 class ColumnsCourseField(Enum):
     CODE = 1
@@ -87,6 +87,12 @@ class Course:
         self._result = result
         self._course_enrollment_times = course_enrollment_times
 
+    def __eq__(self, other: 'Course'):
+        return self.code == other.code
+
+    def __hash__(self):
+        return hash((self.code))
+
     @staticmethod
     def create_course_from_columns(columns: any, parent_row_id: str = '', row_id: str = '') -> 'Course':
         c = Course(
@@ -162,11 +168,32 @@ class Course:
 
     @property
     def result(self) -> str:
-        return self._result.replace('Teljesítés féléve:','').strip()
+        return self._result.strip()
 
     @property
     def sample_curriculum(self) -> str:
         return self._sample_curriculum
 
     def __str__(self):
-        return f'code: {self._code}, name: {self._name}, credit: {self._credit}, recommended_semester: {self._recommended_semester}, sample_curriculum: {self._sample_curriculum}, course_group_code: {self._course_group_code}, course_group_name: {self._course_group_name}, course_type: {self._course_type}, outcome: {self._result}, course_enrollment_times: {self._course_enrollment_times}'
+        return f'code: {self._code}, name: {self._name}, credit: {self._credit}, recommended_semester: {self._recommended_semester}, sample_curriculum: {self._sample_curriculum}, course_group_code: {self._course_group_code}, course_group_name: {self._course_group_name}, course_type: {self._course_type}, result: {self._result}, course_enrollment_times: {self._course_enrollment_times}'
+    
+    def has_been_enrolled_to_course(self) -> bool:
+        enrollment_times = ""
+        try:
+            enrollment_times = int(self._course_enrollment_times)
+
+        except Exception as e:
+            return False
+        
+        return enrollment_times > 0
+    
+    def has_been_completed(self) -> bool:
+        positive_results = ["(2)", "(3)", "(4)", "(5)"]
+        for res in positive_results:
+            if res in self._result:
+                return True
+
+        return False        
+    
+    def is_optional_to_choose(self) -> bool:
+        return "Szabadon választható" in self._course_type
