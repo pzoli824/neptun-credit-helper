@@ -12,7 +12,7 @@ import platform
 import os
 import logging
 from pkg.models.auth import LoginCredentials
-from pkg.models.course import REQUIRED_CREDIT
+from pkg.models.course import ALL_REQUIRED_CREDIT
 from pkg.models.pagination import Pagination
 from pkg.models.student import Student
 from pkg.providers.neptun import University
@@ -102,11 +102,12 @@ class UITerminal:
         return Panel(
             Group(
                 Text.assemble("Név: ", (name, "bold yellow")),
-                Text.assemble("Kreditek: ", (str(credits), "bold red"), "/", str(REQUIRED_CREDIT)),
-                Text.assemble("Szükséges kreditek: ", (str(REQUIRED_CREDIT-credits), "bold red")),
+                Text.assemble("Kreditek: ", (str(credits), "bold red"), "/", str(ALL_REQUIRED_CREDIT)),
+                Text.assemble("Szükséges kreditek: ", (str(ALL_REQUIRED_CREDIT-credits), "bold red")),
                 Text.assemble("Eddig a megszerzett kreditek: ", (str(credits), "bold green")),
                 Text.assemble("Ebben a szemeszterben csinált kreditek: ", (str(current_semester_credits), "bold yellow")),
-                Text.assemble("Kreditek jelenlegi szemeszterrel bezáróan: ", (str(credits+current_semester_credits), "bold yellow"))
+                Text.assemble("Kreditek jelenlegi szemeszterrel bezáróan: ", (str(credits+current_semester_credits), "bold yellow")),
+                Text.assemble(("Az elvégzett Szabadon választható tárgyak kreditjei nincsenek a kimutatott adatokba bele számolva!", "bold red"))
             ),
         title="Személyes adatok"
         )

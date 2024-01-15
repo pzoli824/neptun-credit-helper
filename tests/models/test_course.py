@@ -1,6 +1,12 @@
 import pytest
 
+from typing import NamedTuple
 from pkg.models.course import Course
+
+class CourseAndExcepted(NamedTuple):
+    '''Only used for testing'''
+    course: Course
+    expected_has_been_enrolled_to_course: bool
 
 class CustomColumnForTest:
     text: str
@@ -98,3 +104,27 @@ class TestCourse:
         courses = set(setup_courses_data)
 
         assert len(courses) is 5
+
+    def test_has_been_enrolled_to_course(self):
+        test_data = [
+            CourseAndExcepted(
+                course=Course("", "", "", "", "", "", "", "", "", "1"),
+                expected_has_been_enrolled_to_course=True
+            ),
+            CourseAndExcepted(
+                course=Course("", "", "", "", "", "", "", "", "", "0"),
+                expected_has_been_enrolled_to_course=False
+            ),
+            CourseAndExcepted(
+                course=Course("", "", "", "", "", "", "", "", "", "aaaaa"),
+                expected_has_been_enrolled_to_course=False
+            ),
+            CourseAndExcepted(
+                course=Course("", "", "", "", "", "", "", "", "", ""),
+                expected_has_been_enrolled_to_course=False
+            )
+        ]
+
+        for data in test_data:
+            result = data.course.has_been_enrolled_to_course()
+            assert result is data.expected_has_been_enrolled_to_course        
