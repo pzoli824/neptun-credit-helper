@@ -61,7 +61,7 @@ class TestNeptun:
         ]
 
         courses_in_tree = neptun.get_all_course_informations()
-        courses = courses_in_tree.getLeafNodesData()
+        courses = courses_in_tree.get_leaf_nodes_data()
 
         neptun_mock.driver.get.assert_called_with(expected_url)
         assert len(courses) is 1
@@ -79,7 +79,7 @@ class TestNeptun:
         ]
 
         courses_in_tree = neptun.get_all_course_informations()
-        courses = courses_in_tree.getLeafNodesData()
+        courses = courses_in_tree.get_leaf_nodes_data()
 
         neptun_mock.driver.get.assert_called_with(expected_url)
         assert len(courses) is 2        

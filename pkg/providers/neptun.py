@@ -134,7 +134,7 @@ class Neptun:
                 current_course_node = Node[Course](course)
                 for previous_course_node in previous_course_nodes:
                     if course.row_id == previous_course_node.data.parent_row_id:
-                        current_course_node.appendChildNodes(previous_course_node)
+                        current_course_node.append_child_nodes(previous_course_node)
 
                 current_course_nodes.append(current_course_node)
             
@@ -142,7 +142,7 @@ class Neptun:
                 previous_course_nodes = current_course_nodes[:]
 
         tree = Tree[Course](Course())
-        tree.appendChildNodes(*previous_course_nodes)
+        tree.append_child_nodes(*previous_course_nodes)
         return tree
 
     def _get_current_row_id(self, current_row: any) -> str:

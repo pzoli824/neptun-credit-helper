@@ -5,31 +5,31 @@ from pkg.models.tree import Tree, Node
 class TestTree:
 
     def test_new_tree_initilaization_with_string(self):
-        initValue = "for testing"
+        init_value = "for testing"
 
-        t = Tree[str](initValue)
+        t = Tree[str](init_value)
 
-        assert initValue == t.rootNode.data
+        assert init_value == t.root_node.data
 
     def test_tree_get_leaf_nodes(self):
         t = Tree[str]("parent")
         child1 = Node("child1")
         child1_child1 = Node("child1_child1")
-        child1.appendChildNodes(child1_child1)
+        child1.append_child_nodes(child1_child1)
 
         child2 = Node("child2")
         child2_child1 = Node("child2_child1")
         child2_child2 = Node("child2_child2")
-        child2.appendChildNodes(child2_child1, child2_child2)
+        child2.append_child_nodes(child2_child1, child2_child2)
         child2_child2_chil1 = Node("child2_child2_chil1")
-        child2_child2.appendChildNodes(child2_child2_chil1)
+        child2_child2.append_child_nodes(child2_child2_chil1)
 
-        expectedLeafNodeDatas = ["child1_child1", "child2_child1", "child2_child2_chil1"]
+        expected_leaf_nodes_datas = ["child1_child1", "child2_child1", "child2_child2_chil1"]
 
-        t.appendChildNodes(child1, child2)
+        t.append_child_nodes(child1, child2)
         
-        assert expectedLeafNodeDatas == t.getLeafNodesData()
-        assert len(t.getLeafNodesData()) is 3
+        assert expected_leaf_nodes_datas == t.get_leaf_nodes_data()
+        assert len(t.get_leaf_nodes_data()) is 3
 
 class TestNode:
 
@@ -38,7 +38,7 @@ class TestNode:
         c = Node("child")
         c2 = Node("child2")
 
-        p.appendChildNodes(c, c2)
+        p.append_child_nodes(c, c2)
         c, c2 = p.children
 
         assert c.parent is not None
@@ -61,8 +61,8 @@ class TestNode:
         c2 = Node("child2")
         assert len(p.children) is 0
 
-        p.appendChildNodes(c1)
+        p.append_child_nodes(c1)
         assert len(p.children) is 1
 
-        p.appendChildNodes(c2)
+        p.append_child_nodes(c2)
         assert len(p.children) is 2
