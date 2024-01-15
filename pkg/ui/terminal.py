@@ -12,7 +12,7 @@ import platform
 import os
 import logging
 from pkg.localization.localization import Localization
-from pkg.localization.texts import ACQUIRED_CREDITS, ACQUIRED_CREDITS_AFTER_CURRENT_SEMESTER, AFTER_ESC_TEXT, CODE, COMMANDS, COURSE_INFORMATIONS, CREDIT, CREDITS, CREDITS_UNDER_PROGRESS_IN_CURRENT_SEMESTER, ENROLLMENT_TIMES, ESC, OPTIONAL_COURSES_ARE_NOT_CALCULATED, PERSONAL_INFORMATIONS, PRESS_KEY, RECOMMENDED_SEMESTER, REQUIRED_CREDITS, RESULT, TEXT_COMMANDS, NAME, TYPE
+from pkg.localization.texts import ACQUIRED_CREDITS, ACQUIRED_CREDITS_AFTER_CURRENT_SEMESTER, AFTER_ESC_TEXT, CHOOSE_UNIVERSITY, CODE, COMMANDS, COURSE_INFORMATIONS, CREDIT, CREDITS, CREDITS_UNDER_PROGRESS_IN_CURRENT_SEMESTER, ENROLLMENT_TIMES, ESC, GIVE_PASSWORD, GIVE_USERNAME, OPTIONAL_COURSES_ARE_NOT_CALCULATED, PERSONAL_INFORMATIONS, PRESS_KEY, RECOMMENDED_SEMESTER, REQUIRED_CREDITS, RESULT, TEXT_COMMANDS, NAME, TYPE
 from pkg.models.auth import LoginCredentials
 from pkg.models.course import ALL_REQUIRED_CREDIT
 from pkg.models.pagination import Pagination
@@ -34,10 +34,10 @@ class UITerminal:
         self._loc = loc
 
     @staticmethod
-    def get_login_credentials() -> LoginCredentials:
-        university = Prompt.ask("Válassz egyetemet", choices=[University.SZTE])
-        username = Prompt.ask("Add meg a felhasználóneved")
-        password = Prompt.ask("Add meg a jelszavad", password=True)
+    def get_login_credentials(loc: Localization) -> LoginCredentials:
+        university = Prompt.ask(loc[CHOOSE_UNIVERSITY], choices=[University.SZTE])
+        username = Prompt.ask(loc[GIVE_USERNAME])
+        password = Prompt.ask(loc[GIVE_PASSWORD], password=True)
         return LoginCredentials(username, password, university)
 
     def home(self):
