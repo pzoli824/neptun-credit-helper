@@ -40,6 +40,8 @@ class NeptunPageElement:
     HUNGARY_LANGUAGE_BUTTON_ID = "btnLang_0"
     ENGLISH_LANGUAGE_BUTTON_ID = "btnLang_1"
 
+    REAL_NAME_WITH_NEPTUN_CODE_SPAN_ID = "upTraining_topname"
+
 TABLE_NO_ROW_FOUND = 0
 
 class Neptun:
@@ -82,8 +84,21 @@ class Neptun:
         login_button.click()
 
     def logout_and_quit(self) -> None:
-        self._browser.find_element(By.ID, NeptunPageElement.LOGOUT_ELEMENT_ID).click()
-        self._browser.quit()
+        try:
+            self._browser.find_element(By.ID, NeptunPageElement.LOGOUT_ELEMENT_ID).click()
+
+        except Exception as e:
+            logging.error(e)
+
+        finally:        
+            self._browser.quit()
+
+    def retrieve_student_name_and_neptun_code(self) -> tuple[str, str]:
+        name_with_neptun_code = self._browser.find_element(By.ID, NeptunPageElement.REAL_NAME_WITH_NEPTUN_CODE_SPAN_ID).text
+        data: list[str] = name_with_neptun_code.split('-')
+        name = data[0].strip()
+        neptun_code = data[1].strip()
+        return name, neptun_code
 
     def get_enrolled_courses_in_current_semester(self) -> list[Course]:
         self._navigate_to(NeptunPage.COURSES)
