@@ -39,3 +39,12 @@ class TestStudent:
         credits = s.calculate_current_semester_credits()
 
         assert credits is 5
+
+    def test_student_getter_setter(self):
+        s = Student("")
+
+        s.name = "test name"    
+        s.neptun_code = "code"
+
+        assert s.neptun_code == "code"
+        assert s.name == "test name"
