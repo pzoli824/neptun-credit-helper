@@ -24,6 +24,7 @@ def run():
     browser = BrowserFactory.create_browser(BrowserType.CHROME)
     credentials = UITerminal.get_login_credentials(loc)
     neptun = Neptun(browser, credentials.university)
+    neptun.change_language(loc.language)
     neptun.login(credentials.username, credentials.password)
 
     student = Student("test name")
