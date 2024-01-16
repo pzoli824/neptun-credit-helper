@@ -121,13 +121,13 @@ class UITerminal:
     def _get_courses_table_with_header(self):
         table = Table(expand=True, title=self._loc[COURSE_INFORMATIONS])
 
-        table.add_column(self._loc[CODE], justify="center", style="cyan", no_wrap=True)
-        table.add_column(self._loc[NAME], justify="center", style="magenta")
-        table.add_column(self._loc[CREDIT], justify="center", style="green")
-        table.add_column(self._loc[RECOMMENDED_SEMESTER], justify="center", style="green")
-        table.add_column(self._loc[ENROLLMENT_TIMES], justify="center", style="green")
-        table.add_column(self._loc[TYPE], justify="center", style="green")
-        table.add_column(self._loc[RESULT], justify="center", style="green")
+        table.add_column(self._loc[CODE], justify="center", style="cyan", no_wrap=True, ratio=2)
+        table.add_column(self._loc[NAME], justify="center", style="magenta", no_wrap=True, ratio=9)
+        table.add_column(self._loc[CREDIT], justify="center", style="green", no_wrap=True, ratio=3)
+        table.add_column(self._loc[RECOMMENDED_SEMESTER], justify="center", style="green", no_wrap=True, ratio=4)
+        table.add_column(self._loc[ENROLLMENT_TIMES], justify="center", style="green", no_wrap=True, ratio=4)
+        table.add_column(self._loc[TYPE], justify="center", style="green", no_wrap=True, ratio=3)
+        table.add_column(self._loc[RESULT], justify="center", style="green", no_wrap=True, ratio=4)
 
         return table
     

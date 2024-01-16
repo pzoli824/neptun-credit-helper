@@ -75,7 +75,7 @@ class TestCourse:
         assert course._course_group_code is '45'   
         assert course._course_group_name is 'group_name'   
         assert course._course_type is 'colloquium'   
-        assert course._result is 'success (4)'   
+        assert course._result == '4'   
         assert course._course_enrollment_times is '1'   
 
     def test_course_initialization_by_columns_static_method_column_short_length(self):
