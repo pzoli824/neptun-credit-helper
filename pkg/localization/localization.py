@@ -1,5 +1,9 @@
 import yaml
 
+class UnknownLanguageException(Exception):
+    "Raised when the given language is not supported/unknown"
+    pass
+
 class Language:
     ENGLISH = "en"
     HUNGARY = "hu"

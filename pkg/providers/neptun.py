@@ -1,6 +1,8 @@
 import logging
+import time
 
 from bs4 import BeautifulSoup
+from pkg.localization.localization import Language, UnknownLanguageException
 from pkg.models.course import Course, EnrolledCourse
 from pkg.models.tree import Tree, Node
 from pkg.providers.browser import Browser
@@ -35,6 +37,11 @@ class NeptunPageElement:
     COURSES_SEMESTER_SELECT_ID = "cmb_cmb"
     COURSES_RETRIEVED_SEMESTER_COURSES_DIV_ID = "h_addedsubjects_ipCreditSum"
 
+    HUNGARY_LANGUAGE_BUTTON_ID = "btnLang_0"
+    ENGLISH_LANGUAGE_BUTTON_ID = "btnLang_1"
+
+    REAL_NAME_WITH_NEPTUN_CODE_SPAN_ID = "upTraining_topname"
+
 TABLE_NO_ROW_FOUND = 0
 
 class Neptun:
@@ -47,6 +54,20 @@ class Neptun:
     def _navigate_to(self, page: NeptunPage) -> None:
         url = f"{self._base_url}{page}"
         self._browser.get(url)
+
+    def change_language(self, lang: Language):
+        self._navigate_to(NeptunPage.LOGIN)
+        match lang:
+            case Language.HUNGARY:
+                lang_button = self._browser.find_element(By.ID, NeptunPageElement.HUNGARY_LANGUAGE_BUTTON_ID)
+                lang_button.click()
+            case Language.ENGLISH:
+                lang_button = self._browser.find_element(By.ID, NeptunPageElement.ENGLISH_LANGUAGE_BUTTON_ID)
+                lang_button.click()
+            case _:
+                raise UnknownLanguageException
+        
+        time.sleep(1.0)
 
     def login(self, username: str, password: str) -> None:
         self._navigate_to(NeptunPage.LOGIN)
@@ -63,8 +84,21 @@ class Neptun:
         login_button.click()
 
     def logout_and_quit(self) -> None:
-        self._browser.find_element(By.ID, NeptunPageElement.LOGOUT_ELEMENT_ID).click()
-        self._browser.quit()
+        try:
+            self._browser.find_element(By.ID, NeptunPageElement.LOGOUT_ELEMENT_ID).click()
+
+        except Exception as e:
+            logging.error(e)
+
+        finally:        
+            self._browser.quit()
+
+    def retrieve_student_name_and_neptun_code(self) -> tuple[str, str]:
+        name_with_neptun_code = self._browser.find_element(By.ID, NeptunPageElement.REAL_NAME_WITH_NEPTUN_CODE_SPAN_ID).text
+        data: list[str] = name_with_neptun_code.split('-')
+        name = data[0].strip()
+        neptun_code = data[1].strip()
+        return name, neptun_code
 
     def get_enrolled_courses_in_current_semester(self) -> list[Course]:
         self._navigate_to(NeptunPage.COURSES)

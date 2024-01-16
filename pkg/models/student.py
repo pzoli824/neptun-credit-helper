@@ -6,6 +6,7 @@ from pkg.models.tree import Tree
 class Student:
     _all_courses: Tree[Course] = None
     _current_courses: list[EnrolledCourse] = []
+    _neptun_code: str = "unknown"
 
     def __init__(self, name: str) -> None:
         self._name = name
@@ -13,6 +14,18 @@ class Student:
     @property
     def name(self) -> str:
         return self._name
+
+    @name.setter
+    def name(self, new_name: str) -> str:
+        self._name = new_name
+
+    @property
+    def neptun_code(self) -> str:
+        return self._neptun_code
+
+    @neptun_code.setter
+    def neptun_code(self, new_neptun_code: str) -> str:
+        self._neptun_code = new_neptun_code        
 
     @property
     def all_courses(self) -> Tree[Course]:

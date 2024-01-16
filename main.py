@@ -24,13 +24,16 @@ def run():
     browser = BrowserFactory.create_browser(BrowserType.CHROME)
     credentials = UITerminal.get_login_credentials(loc)
     neptun = Neptun(browser, credentials.university)
+    neptun.change_language(loc.language)
     neptun.login(credentials.username, credentials.password)
 
-    student = Student("test name")
-    #TODO get student name too
+    student = Student("unknown")
     try:
         student.all_courses = neptun.get_all_course_informations()
         student.current_courses = neptun.get_enrolled_courses_in_current_semester()
+        name, neptun_code = neptun.retrieve_student_name_and_neptun_code()
+        student.name = name
+        student.neptun_code = neptun_code
 
     except Exception as e:
         logging.error(e)
