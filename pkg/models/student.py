@@ -59,3 +59,19 @@ class Student:
                 credits += int(current_course.credit)
 
         return credits    
+    
+    def calculate_credits_that_has_been_acquired_in_this_semester(self) -> int:
+        all_courses: list[Course] = set(self._all_courses.get_leaf_nodes_data())
+        current_courses: list[Course] = set(self.current_courses)
+        current_courses_which_are_completed = list[Course]()
+        for all_course in all_courses:
+            for current_course in current_courses:
+                if all_course == current_course:
+                    current_courses_which_are_completed.append(all_course)
+
+        credits = 0
+        for c in current_courses_which_are_completed:
+            if c.has_been_completed() and not c.is_optional_to_choose() and c.has_been_enrolled_to_course():
+                credits += int(c.credit)
+            
+        return credits
