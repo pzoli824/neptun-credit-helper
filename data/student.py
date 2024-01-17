@@ -27,11 +27,11 @@ def data_test_all_course() -> Tree[Course]:
     p2.append_child_nodes(
         Node[Course](Course('9', 'Test Course with longer name 9', '1', '3', result='Average (3)', course_enrollment_times='3')),
         Node[Course](Course('10', 'Test Course 10', '2', '3', result='', course_enrollment_times='')),
-        Node[Course](Course('11', 'Test Course 11', '3', '4', result='', course_enrollment_times='')),
-        Node[Course](Course('12', 'Test Course with long name 12', '2', '4', result='', course_enrollment_times='')),
-        Node[Course](Course('13', 'Test Course 13', '1', '4', result='', course_enrollment_times='')),
-        Node[Course](Course('14', 'Test Course 14', '4', '4', result='', course_enrollment_times='')),
-        Node[Course](Course('15', 'Test Course 15', '5', '4', result='', course_enrollment_times=''))
+        Node[Course](Course('11', 'Test Course 11', '3', '4', result='', course_enrollment_times='1')),
+        Node[Course](Course('12', 'Test Course with long name 12', '2', '4', result='', course_enrollment_times='1')),
+        Node[Course](Course('13', 'Test Course 13', '1', '4', result='', course_enrollment_times='1')),
+        Node[Course](Course('14', 'Test Course 14', '4', '4', result='(3)', course_enrollment_times='1')),
+        Node[Course](Course('15', 'Test Course 15', credit='5', recommended_semester='4', result='(4)', course_enrollment_times='1'))
     )
 
     p3.append_child_nodes(
@@ -55,7 +55,7 @@ def data_test_create_node_courses(l: int, h: int) -> list[Node[Course]]:
 def data_test_enrolled_courses() -> list[EnrolledCourse]:
     return [
         EnrolledCourse('11', 'Test Course 11', '3', '1'),
-        EnrolledCourse('12', 'Test Course 12', '2', '1'),
+        EnrolledCourse('12', 'Test Course with long name 12', '2', '1'),
         EnrolledCourse('13', 'Test Course 13', '1', '1'),
         EnrolledCourse('14', 'Test Course 14', '4', '1'),
         EnrolledCourse('15', 'Test Course 15', '5', '1')
