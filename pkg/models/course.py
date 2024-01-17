@@ -84,7 +84,7 @@ class Course:
         self._course_group_code = course_group_code
         self._course_group_name = course_group_name
         self._course_type = course_type
-        self._result = result
+        self._result = Course._convert_result_to_only_grade(result)
         self._course_enrollment_times = course_enrollment_times
 
     def __eq__(self, other: 'Course'):
@@ -177,6 +177,18 @@ class Course:
     def __str__(self):
         return f'code: {self._code}, name: {self._name}, credit: {self._credit}, recommended_semester: {self._recommended_semester}, sample_curriculum: {self._sample_curriculum}, course_group_code: {self._course_group_code}, course_group_name: {self._course_group_name}, course_type: {self._course_type}, result: {self._result}, course_enrollment_times: {self._course_enrollment_times}'
     
+    @staticmethod
+    def _convert_result_to_only_grade(result: str) -> str:
+        if result == "":
+            return result
+        
+        positive_results_in_parenthesis = ["(2)", "(3)", "(4)", "(5)"]
+        for positive_result in positive_results_in_parenthesis:
+            if positive_result in result:
+                return positive_result.replace('(', '').replace(')', '')
+
+        return ''
+
     def has_been_enrolled_to_course(self) -> bool:
         enrollment_times = ""
         try:
@@ -188,7 +200,7 @@ class Course:
         return enrollment_times > 0
     
     def has_been_completed(self) -> bool:
-        positive_results = ["(2)", "(3)", "(4)", "(5)"]
+        positive_results = ["2", "3", "4", "5"]
         for res in positive_results:
             if res in self._result:
                 return True
