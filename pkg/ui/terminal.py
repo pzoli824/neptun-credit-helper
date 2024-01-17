@@ -12,9 +12,9 @@ import platform
 import os
 import logging
 from pkg.localization.localization import Localization
-from pkg.localization.texts import AFTER_DOWN_ARROW_TEXT, AFTER_ESC_TEXT, AFTER_LEFT_ARROW_TEXT, AFTER_RIGHT_ARROW_TEXT, AFTER_UP_ARROW_TEXT, CHOOSE_UNIVERSITY, CODE, COMMANDS, COURSE_INFORMATIONS, CREDIT, CREDITS, CREDITS_ACQUIRED_CURRENT_SEMESTER, CREDITS_BEFORE_CURRENT_SEMESTER, DOWN_ARROW, ENROLLMENT_TIMES, ESC, GIVE_PASSWORD, GIVE_USERNAME, LEFT_ARROW, NEPTUN_CODE, OPTIONAL_COURSES_ARE_NOT_CALCULATED, PERSONAL_INFORMATIONS, PRESS_KEY, RECOMMENDED_SEMESTER, REQUIRED_CREDITS, RESULT, RIGHT_ARROW, TEXT_COMMANDS, NAME, TYPE, UP_ARROW
+from pkg.localization.texts import AFTER_DOWN_ARROW_TEXT, AFTER_ESC_TEXT, AFTER_LEFT_ARROW_TEXT, AFTER_RIGHT_ARROW_TEXT, AFTER_UP_ARROW_TEXT, CHOOSE_UNIVERSITY, CODE, COMMANDS, COURSE_INFORMATIONS, CREDIT, CREDITS, CREDITS_ACQUIRED_CURRENT_SEMESTER, CREDITS_BEFORE_CURRENT_SEMESTER, CURRENT_COURSE_INFORMATIONS, DOWN_ARROW, ENROLLMENT_TIMES, ESC, GIVE_PASSWORD, GIVE_USERNAME, LEFT_ARROW, NEPTUN_CODE, OPTIONAL_COURSES_ARE_NOT_CALCULATED, PERSONAL_INFORMATIONS, PRESS_KEY, RECOMMENDED_SEMESTER, REQUIRED_CREDITS, RESULT, RIGHT_ARROW, TEXT_COMMANDS, NAME, TYPE, UP_ARROW
 from pkg.models.auth import LoginCredentials
-from pkg.models.course import ALL_REQUIRED_CREDIT, Course
+from pkg.models.course import ALL_REQUIRED_CREDIT, Course, EnrolledCourse
 from pkg.models.pagination import Pagination
 from pkg.models.student import Student
 from pkg.providers.neptun import University
@@ -25,12 +25,18 @@ class DataLayout(NamedTuple):
     layout: Layout
     table: Table
 
+class TableMode:
+    ALL_COURSES = '1'
+    CURRENT_COURSES = '2'
+
 class UITerminal:
 
     def __init__(self, student: Student, loc: Localization):
         self._console = Console()
         self._student = student
         self._all_course_pagination = Pagination(student.all_courses.get_leaf_nodes_data())
+        self._current_course_pagination = Pagination(student.current_courses)
+        self._table_mode = TableMode.ALL_COURSES
         self._loc = loc
 
     @staticmethod
@@ -40,25 +46,38 @@ class UITerminal:
         password = Prompt.ask(loc[GIVE_PASSWORD], password=True)
         return LoginCredentials(username, password, university)
 
-    def home(self):
-        self._console.clear()
-
-        data_layout, table = self._get_data_layout_and_table()
-
+    def _initialize_quantities_for_paginations(self):
         table_header_size = 3
         table_footer_size = 1
         data_layout_title_size = 1
 
         display_row_number = (self._console.height / 2) - (table_header_size + table_footer_size + data_layout_title_size)
+        all_courses_quantity = self._calculate_quantity_for_paginations(self._all_course_pagination, display_row_number)
+        self._all_course_pagination.quantity = all_courses_quantity
+        current_courses_quantity = self._calculate_quantity_for_paginations(self._current_course_pagination, display_row_number)
+        self._current_course_pagination.quantity = current_courses_quantity
+
+    def _calculate_quantity_for_paginations(self, pagi: Pagination[Course] | Pagination[EnrolledCourse], display_row_number: int) -> int:
         quantity = 0
+        for _ in pagi:
+            quantity += 1
+            if quantity >= display_row_number:
+                return quantity
+
+        return quantity     
+
+    def home(self):
+        self._console.clear()
+
+        data_layout, table = self._get_data_layout_and_table()
         
+        self._initialize_quantities_for_paginations()
+
         courses = self._all_course_pagination
         for course in courses:
             table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
             data_layout.update(table)
-            quantity += 1
-            if table.row_count >= display_row_number:
-                courses.set_quantity(quantity)
+            if table.row_count >= courses.quantity:
                 break
 
         page_number = self._all_course_pagination.get_page_number()
@@ -85,7 +104,17 @@ class UITerminal:
                     time.sleep(WAIT_TIME_AFTER_KEY_PRESS)    
                 if keyboard.is_pressed('up arrow'):
                     self._home_courses_last_page()    
-                    time.sleep(WAIT_TIME_AFTER_KEY_PRESS)                     
+                    time.sleep(WAIT_TIME_AFTER_KEY_PRESS)
+                if keyboard.is_pressed('F1'):
+                    if self._table_mode != TableMode.ALL_COURSES:
+                        self._table_mode = TableMode.ALL_COURSES
+                        self._home_courses_first_page()    
+                    time.sleep(WAIT_TIME_AFTER_KEY_PRESS)                       
+                if keyboard.is_pressed('F2'):
+                    if self._table_mode != TableMode.CURRENT_COURSES:
+                        self._table_mode = TableMode.CURRENT_COURSES
+                        self._home_courses_first_page()    
+                    time.sleep(WAIT_TIME_AFTER_KEY_PRESS)                         
             except Exception as e:
                 logging.error(e)
                 break
@@ -145,6 +174,16 @@ class UITerminal:
 
         return table
     
+    def _get_current_courses_table_with_header(self):
+        table = Table(expand=True, title=self._loc[CURRENT_COURSE_INFORMATIONS])
+
+        table.add_column(self._loc[CODE], justify="center", style="cyan", no_wrap=True, ratio=2)
+        table.add_column(self._loc[NAME], justify="center", style="magenta", no_wrap=True, ratio=9)
+        table.add_column(self._loc[CREDIT], justify="center", style="green", no_wrap=True, ratio=3)
+        table.add_column(self._loc[ENROLLMENT_TIMES], justify="center", style="green", no_wrap=True, ratio=4)
+
+        return table
+    
     def _get_home_layout(self, informations_layout: Layout, data_layout: Layout) -> Layout:
         home_layout = Layout()
         home_layout.split_column(
@@ -163,36 +202,88 @@ class UITerminal:
         return informations_layout
     
     def _get_data_layout_and_table(self) -> DataLayout:
-        table = self._get_courses_table_with_header()
+        table: Table
+        match self._table_mode:
+            case TableMode.ALL_COURSES:
+                table = self._get_courses_table_with_header()
+            case TableMode.CURRENT_COURSES:
+                table = self._get_current_courses_table_with_header()
+            case _:    
+                table = self._get_courses_table_with_header()
+
         data_layout = Layout(table, name="data")
         return DataLayout(layout=data_layout, table=table)
 
     def _home_courses_next_page(self):
-        self._print_table_courses(self._all_course_pagination.get_next_page_elements())
+        match self._table_mode:
+            case TableMode.ALL_COURSES:
+                self._print_table_courses(self._all_course_pagination.get_next_page_elements())
+            case TableMode.CURRENT_COURSES:
+                self._print_table_courses(self._current_course_pagination.get_next_page_elements())
+            case _:
+                self._print_table_courses(self._all_course_pagination.get_next_page_elements())
 
     def _home_courses_previous_page(self):
-        self._print_table_courses(self._all_course_pagination.get_previous_page_elements())
+        match self._table_mode:
+            case TableMode.ALL_COURSES:
+                self._print_table_courses(self._all_course_pagination.get_previous_page_elements())
+            case TableMode.CURRENT_COURSES:
+                self._print_table_courses(self._current_course_pagination.get_previous_page_elements())
+            case _:
+                self._print_table_courses(self._all_course_pagination.get_previous_page_elements())
 
     def _home_courses_first_page(self):
-        self._print_table_courses(self._all_course_pagination.get_first_page_elements())
+        match self._table_mode:
+            case TableMode.ALL_COURSES:
+                self._print_table_courses(self._all_course_pagination.get_first_page_elements())
+            case TableMode.CURRENT_COURSES:
+                self._print_table_courses(self._current_course_pagination.get_first_page_elements())
+            case _:
+                self._print_table_courses(self._all_course_pagination.get_first_page_elements())
 
     def _home_courses_last_page(self):
-        self._print_table_courses(self._all_course_pagination.get_last_page_elements())      
+        match self._table_mode:
+            case TableMode.ALL_COURSES:
+                self._print_table_courses(self._all_course_pagination.get_last_page_elements())
+            case TableMode.CURRENT_COURSES:
+                self._print_table_courses(self._current_course_pagination.get_last_page_elements())
+            case _:
+                self._print_table_courses(self._all_course_pagination.get_last_page_elements())
+      
 
-    def _print_table_courses(self, courses: list[Course]):
+    def _print_table_courses(self, courses: list[Course] | list[EnrolledCourse]):
         data_layout, table = self._get_data_layout_and_table()
 
         if len(courses) == 0:
             return
 
-        for course in courses:
-            table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
-            data_layout.update(table)
+        match self._table_mode:
+            case TableMode.ALL_COURSES:
+                for course in courses:
+                    table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
+                    data_layout.update(table)
+            case TableMode.CURRENT_COURSES:
+                for course in courses:
+                    table.add_row(course.code, course.name, course.credit, course.course_enrollment_times)
+                    data_layout.update(table)
+            case _:
+                for course in courses:
+                    table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
+                    data_layout.update(table)
         
-        page_number = self._all_course_pagination.get_page_number()
-        last_page_number = self._all_course_pagination.get_last_page_number()
+        page_number, last_page_number = self._get_page_number_and_last_page_number_based_on_table_mode()
 
         table.title = f"{table.title} ({page_number}/{last_page_number})"
 
         self._console.clear()
         print(self._get_home_layout(self._get_informations_layout(), data_layout))      
+
+
+    def _get_page_number_and_last_page_number_based_on_table_mode(self) -> tuple[int, int]:
+        match self._table_mode:
+            case TableMode.ALL_COURSES:
+                return self._all_course_pagination.get_page_number(), self._all_course_pagination.get_last_page_number()
+            case TableMode.CURRENT_COURSES:
+                return self._current_course_pagination.get_page_number(), self._current_course_pagination.get_last_page_number()
+            case _:
+                return 0,0        

@@ -33,14 +33,21 @@ class Pagination(Generic[T]):
         page = self._page_index / self._quantity
         return math.floor(page) * self._quantity
 
-    def set_quantity(self, quantity):
-        self._quantity = quantity
+    @property
+    def quantity(self):
+        return self._quantity
+
+    @quantity.setter
+    def quantity(self, new_quantity):
+        self._quantity = new_quantity
 
     def get_page_number(self) -> int:
         page = self._page_index / self._quantity
         return math.floor(page) + 1
 
     def get_last_page_number(self) -> int:
+        if len(self._data) <= self._quantity:
+            return 1
         page = len(self._data) / self._quantity
         return math.floor(page) + 1
 
