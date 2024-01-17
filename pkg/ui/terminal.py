@@ -12,7 +12,7 @@ import platform
 import os
 import logging
 from pkg.localization.localization import Localization
-from pkg.localization.texts import AFTER_DOWN_ARROW_TEXT, AFTER_ESC_TEXT, AFTER_LEFT_ARROW_TEXT, AFTER_RIGHT_ARROW_TEXT, AFTER_UP_ARROW_TEXT, CHOOSE_UNIVERSITY, CODE, COMMANDS, COURSE_INFORMATIONS, CREDIT, CREDITS, CREDITS_ACQUIRED_CURRENT_SEMESTER, CREDITS_BEFORE_CURRENT_SEMESTER, CURRENT_COURSE_INFORMATIONS, DOWN_ARROW, ENROLLMENT_TIMES, ESC, GIVE_PASSWORD, GIVE_USERNAME, LEFT_ARROW, NEPTUN_CODE, OPTIONAL_COURSES_ARE_NOT_CALCULATED, PERSONAL_INFORMATIONS, PRESS_KEY, RECOMMENDED_SEMESTER, REQUIRED_CREDITS, RESULT, RIGHT_ARROW, TEXT_COMMANDS, NAME, TYPE, UP_ARROW
+from pkg.localization.texts import AFTER_DOWN_ARROW_TEXT, AFTER_ESC_TEXT, AFTER_F1_TEXT, AFTER_F2_TEXT, AFTER_LEFT_ARROW_TEXT, AFTER_RIGHT_ARROW_TEXT, AFTER_UP_ARROW_TEXT, CHOOSE_UNIVERSITY, CODE, COMMANDS, COURSE_INFORMATIONS, CREDIT, CREDITS, CREDITS_ACQUIRED_CURRENT_SEMESTER, CREDITS_BEFORE_CURRENT_SEMESTER, CURRENT_COURSE_INFORMATIONS, DOWN_ARROW, ENROLLMENT_TIMES, ESC, F1, F2, GIVE_PASSWORD, GIVE_USERNAME, LEFT_ARROW, NEPTUN_CODE, OPTIONAL_COURSES_ARE_NOT_CALCULATED, PERSONAL_INFORMATIONS, PRESS_KEY, RECOMMENDED_SEMESTER, REQUIRED_CREDITS, RESULT, RIGHT_ARROW, TEXT_COMMANDS, NAME, TYPE, UP_ARROW
 from pkg.models.auth import LoginCredentials
 from pkg.models.course import ALL_REQUIRED_CREDIT, Course, EnrolledCourse
 from pkg.models.pagination import Pagination
@@ -113,11 +113,11 @@ class UITerminal:
                 if keyboard.is_pressed('F2'):
                     if self._table_mode != TableMode.CURRENT_COURSES:
                         self._table_mode = TableMode.CURRENT_COURSES
-                        self._home_courses_first_page()    
+                        self._home_courses_first_page() 
                     time.sleep(WAIT_TIME_AFTER_KEY_PRESS)                         
             except Exception as e:
                 logging.error(e)
-                break
+                return
         
         self._clear_system_console()
 
@@ -139,7 +139,9 @@ class UITerminal:
                 Text.assemble(f"{loc[PRESS_KEY]} ", (loc[LEFT_ARROW], "bold yellow"), f" {loc[AFTER_LEFT_ARROW_TEXT]}"),
                 Text.assemble(f"{loc[PRESS_KEY]} ", (loc[RIGHT_ARROW], "bold yellow"), f" {loc[AFTER_RIGHT_ARROW_TEXT]}"),
                 Text.assemble(f"{loc[PRESS_KEY]} ", (loc[DOWN_ARROW], "bold magenta"), f" {loc[AFTER_DOWN_ARROW_TEXT]}"),
-                Text.assemble(f"{loc[PRESS_KEY]} ", (loc[UP_ARROW], "bold magenta"), f" {loc[AFTER_UP_ARROW_TEXT]}")
+                Text.assemble(f"{loc[PRESS_KEY]} ", (loc[UP_ARROW], "bold magenta"), f" {loc[AFTER_UP_ARROW_TEXT]}"),
+                Text.assemble(f"{loc[PRESS_KEY]} ", (loc[F1], "bold cyan"), f" {loc[AFTER_F1_TEXT]}"),
+                Text.assemble(f"{loc[PRESS_KEY]} ", (loc[F2], "bold white"), f" {loc[AFTER_F2_TEXT]}")
             ),
         title=self._loc[TEXT_COMMANDS]
         )
@@ -276,7 +278,7 @@ class UITerminal:
         table.title = f"{table.title} ({page_number}/{last_page_number})"
 
         self._console.clear()
-        print(self._get_home_layout(self._get_informations_layout(), data_layout))      
+        print(self._get_home_layout(self._get_informations_layout(), data_layout)) 
 
 
     def _get_page_number_and_last_page_number_based_on_table_mode(self) -> tuple[int, int]:

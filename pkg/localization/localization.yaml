@@ -32,6 +32,10 @@ hu:
     after_down_arrow_text: "billentyűt a kurzus tábla elejére léptetéséhez"
     up_arrow: "UP ARROW"
     after_up_arrow_text: "billentyűt a kurzus tábla végére léptetéséhez"
+    shift_f_1: "F1"
+    after_f1_text: "billentyűt az összes kurzus megtekintéséhez"
+    shift_f_2: "F2"
+    after_f2_text: "billentyűt az ebben a szemeszterben csinált kurzusok megtekintéséhez"
 
 en:
   choose_language: "Choose a language"
@@ -67,3 +71,7 @@ en:
     after_down_arrow_text: "to step to the start of courses table"
     up_arrow: "UP ARROW"
     after_up_arrow_text: "to step to the end of courses table"
+    shift_f_1: "F1"
+    after_f1_text: "to view all courses informations"
+    shift_f_2: "F2"
+    after_f2_text: "to view current semester courses informations"

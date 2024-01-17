@@ -52,8 +52,6 @@ class Pagination(Generic[T]):
         return math.floor(page) + 1
 
     def get_first_page_elements(self) -> list[T]:
-        if self._page_index == 0:
-            return []
         self._page_index = 0
         return self._data[self._page_index:self._quantity:1]
     
