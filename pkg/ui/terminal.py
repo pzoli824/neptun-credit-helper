@@ -12,7 +12,7 @@ import platform
 import os
 import logging
 from pkg.localization.localization import Localization
-from pkg.localization.texts import ACQUIRED_CREDITS, ACQUIRED_CREDITS_AFTER_CURRENT_SEMESTER, AFTER_ESC_TEXT, CHOOSE_UNIVERSITY, CODE, COMMANDS, COURSE_INFORMATIONS, CREDIT, CREDITS, CREDITS_UNDER_PROGRESS_IN_CURRENT_SEMESTER, ENROLLMENT_TIMES, ESC, GIVE_PASSWORD, GIVE_USERNAME, NEPTUN_CODE, OPTIONAL_COURSES_ARE_NOT_CALCULATED, PERSONAL_INFORMATIONS, PRESS_KEY, RECOMMENDED_SEMESTER, REQUIRED_CREDITS, RESULT, TEXT_COMMANDS, NAME, TYPE
+from pkg.localization.texts import ACQUIRED_CREDITS, AFTER_ESC_TEXT, CHOOSE_UNIVERSITY, CODE, COMMANDS, COURSE_INFORMATIONS, CREDIT, CREDITS, CREDITS_UNDER_PROGRESS_IN_CURRENT_SEMESTER, ENROLLMENT_TIMES, ESC, GIVE_PASSWORD, GIVE_USERNAME, NEPTUN_CODE, OPTIONAL_COURSES_ARE_NOT_CALCULATED, PERSONAL_INFORMATIONS, PRESS_KEY, RECOMMENDED_SEMESTER, REQUIRED_CREDITS, RESULT, TEXT_COMMANDS, NAME, TYPE
 from pkg.models.auth import LoginCredentials
 from pkg.models.course import ALL_REQUIRED_CREDIT
 from pkg.models.pagination import Pagination
@@ -103,6 +103,7 @@ class UITerminal:
 
     def _get_personal_informations(self):
         credits = self._student.calculate_finished_credits()
+        acquired_credits_in_current_semester = self._student.calculate_credits_that_has_been_acquired_in_this_semester()
         current_semester_credits = self._student.calculate_current_semester_credits()
         return Panel(
             Group(
@@ -111,8 +112,7 @@ class UITerminal:
                 Text.assemble(f"{self._loc[CREDITS]}: ", (str(credits), "bold red"), "/", str(ALL_REQUIRED_CREDIT)),
                 Text.assemble(f"{self._loc[REQUIRED_CREDITS]}: ", (str(ALL_REQUIRED_CREDIT-credits), "bold red")),
                 Text.assemble(f"{self._loc[ACQUIRED_CREDITS]}: ", (str(credits), "bold green")),
-                Text.assemble(f"{self._loc[CREDITS_UNDER_PROGRESS_IN_CURRENT_SEMESTER]}: ", (str(current_semester_credits), "bold yellow")),
-                Text.assemble(f"{self._loc[ACQUIRED_CREDITS_AFTER_CURRENT_SEMESTER]}: ", (str(credits+current_semester_credits), "bold yellow")),
+                Text.assemble(f"{self._loc[CREDITS_UNDER_PROGRESS_IN_CURRENT_SEMESTER]}: ", (str(acquired_credits_in_current_semester), "bold yellow"), "/", str(current_semester_credits)),
                 Text.assemble((f"{self._loc[OPTIONAL_COURSES_ARE_NOT_CALCULATED]}!", "bold red"))
             ),
         title=self._loc[PERSONAL_INFORMATIONS]
