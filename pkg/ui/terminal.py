@@ -12,7 +12,7 @@ import platform
 import os
 import logging
 from pkg.localization.localization import Localization
-from pkg.localization.texts import AFTER_ESC_TEXT, CHOOSE_UNIVERSITY, CODE, COMMANDS, COURSE_INFORMATIONS, CREDIT, CREDITS, CREDITS_ACQUIRED_CURRENT_SEMESTER, CREDITS_BEFORE_CURRENT_SEMESTER, ENROLLMENT_TIMES, ESC, GIVE_PASSWORD, GIVE_USERNAME, NEPTUN_CODE, OPTIONAL_COURSES_ARE_NOT_CALCULATED, PERSONAL_INFORMATIONS, PRESS_KEY, RECOMMENDED_SEMESTER, REQUIRED_CREDITS, RESULT, TEXT_COMMANDS, NAME, TYPE
+from pkg.localization.texts import AFTER_DOWN_ARROW_TEXT, AFTER_ESC_TEXT, AFTER_LEFT_ARROW_TEXT, AFTER_RIGHT_ARROW_TEXT, AFTER_UP_ARROW_TEXT, CHOOSE_UNIVERSITY, CODE, COMMANDS, COURSE_INFORMATIONS, CREDIT, CREDITS, CREDITS_ACQUIRED_CURRENT_SEMESTER, CREDITS_BEFORE_CURRENT_SEMESTER, DOWN_ARROW, ENROLLMENT_TIMES, ESC, GIVE_PASSWORD, GIVE_USERNAME, LEFT_ARROW, NEPTUN_CODE, OPTIONAL_COURSES_ARE_NOT_CALCULATED, PERSONAL_INFORMATIONS, PRESS_KEY, RECOMMENDED_SEMESTER, REQUIRED_CREDITS, RESULT, RIGHT_ARROW, TEXT_COMMANDS, NAME, TYPE, UP_ARROW
 from pkg.models.auth import LoginCredentials
 from pkg.models.course import ALL_REQUIRED_CREDIT
 from pkg.models.pagination import Pagination
@@ -98,12 +98,14 @@ class UITerminal:
                 logging.warning("Failed to clear system console")
 
     def _get_commands(self):
-        press_key_text = self._loc[COMMANDS][PRESS_KEY]
-        esc_text = self._loc[COMMANDS][ESC]
-        after_esc_text = self._loc[COMMANDS][AFTER_ESC_TEXT]
+        loc = self._loc[COMMANDS]
         return Panel(
             Group(
-                Text.assemble(f"{press_key_text} ", (esc_text, "bold red"), f" {after_esc_text}")
+                Text.assemble(f"{loc[PRESS_KEY]} ", (loc[ESC], "bold red"), f" {loc[AFTER_ESC_TEXT]}"),
+                Text.assemble(f"{loc[PRESS_KEY]} ", (loc[LEFT_ARROW], "bold yellow"), f" {loc[AFTER_LEFT_ARROW_TEXT]}"),
+                Text.assemble(f"{loc[PRESS_KEY]} ", (loc[RIGHT_ARROW], "bold yellow"), f" {loc[AFTER_RIGHT_ARROW_TEXT]}"),
+                Text.assemble(f"{loc[PRESS_KEY]} ", (loc[DOWN_ARROW], "bold magenta"), f" {loc[AFTER_DOWN_ARROW_TEXT]}"),
+                Text.assemble(f"{loc[PRESS_KEY]} ", (loc[UP_ARROW], "bold magenta"), f" {loc[AFTER_UP_ARROW_TEXT]}")
             ),
         title=self._loc[TEXT_COMMANDS]
         )
