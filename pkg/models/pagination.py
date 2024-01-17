@@ -45,9 +45,21 @@ class Pagination(Generic[T]):
             
         return page
 
-    def get_first_page(self) -> list[T]:
+    def get_first_page_elements(self) -> list[T]:
+        if self._page_index == 0:
+            return []
         self._page_index = 0
-        return self._data[self._page_index, self._quantity, 1]
+        return self._data[self._page_index:self._quantity:1]
+    
+    def get_last_page_elements(self) -> list[T]:
+        page_in_float = len(self._data) / self._quantity
+        first_index_of_last_page = math.floor(page_in_float) * self._quantity
+        if self._page_index == first_index_of_last_page:
+            return []
+        
+        self._page_index = first_index_of_last_page
+        remaining_quantity = first_index_of_last_page + (len(self._data) - first_index_of_last_page)
+        return self._data[self._page_index:remaining_quantity:1]
 
     def get_current_page_elements(self) -> list[T]:
         index = self._page_index

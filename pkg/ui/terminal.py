@@ -75,7 +75,14 @@ class UITerminal:
                 if keyboard.is_pressed('left arrow'):
                     self._home_courses_previous_page()    
                     time.sleep(WAIT_TIME_AFTER_KEY_PRESS)
-            except:
+                if keyboard.is_pressed('down arrow'):
+                    self._home_courses_first_page()    
+                    time.sleep(WAIT_TIME_AFTER_KEY_PRESS)    
+                if keyboard.is_pressed('up arrow'):
+                    self._home_courses_last_page()    
+                    time.sleep(WAIT_TIME_AFTER_KEY_PRESS)                     
+            except Exception as e:
+                logging.error(e)
                 break
         
         self._clear_system_console()
@@ -182,3 +189,33 @@ class UITerminal:
         
         self._console.clear()
         print(self._get_home_layout(self._get_informations_layout(), data_layout))
+
+    def _home_courses_first_page(self):
+        data_layout, table = self._get_data_layout_and_table()
+
+        first_page_courses = self._all_course_pagination.get_first_page_elements()    
+
+        if len(first_page_courses) == 0:
+            return
+        
+        for course in first_page_courses:
+            table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
+            data_layout.update(table)
+        
+        self._console.clear()
+        print(self._get_home_layout(self._get_informations_layout(), data_layout))
+
+    def _home_courses_last_page(self):
+        data_layout, table = self._get_data_layout_and_table()
+
+        last_page_courses = self._all_course_pagination.get_last_page_elements()    
+
+        if len(last_page_courses) == 0:
+            return
+        
+        for course in last_page_courses:
+            table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
+            data_layout.update(table)
+        
+        self._console.clear()
+        print(self._get_home_layout(self._get_informations_layout(), data_layout))        
