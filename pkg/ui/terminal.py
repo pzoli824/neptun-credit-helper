@@ -14,7 +14,7 @@ import logging
 from pkg.localization.localization import Localization
 from pkg.localization.texts import AFTER_DOWN_ARROW_TEXT, AFTER_ESC_TEXT, AFTER_LEFT_ARROW_TEXT, AFTER_RIGHT_ARROW_TEXT, AFTER_UP_ARROW_TEXT, CHOOSE_UNIVERSITY, CODE, COMMANDS, COURSE_INFORMATIONS, CREDIT, CREDITS, CREDITS_ACQUIRED_CURRENT_SEMESTER, CREDITS_BEFORE_CURRENT_SEMESTER, DOWN_ARROW, ENROLLMENT_TIMES, ESC, GIVE_PASSWORD, GIVE_USERNAME, LEFT_ARROW, NEPTUN_CODE, OPTIONAL_COURSES_ARE_NOT_CALCULATED, PERSONAL_INFORMATIONS, PRESS_KEY, RECOMMENDED_SEMESTER, REQUIRED_CREDITS, RESULT, RIGHT_ARROW, TEXT_COMMANDS, NAME, TYPE, UP_ARROW
 from pkg.models.auth import LoginCredentials
-from pkg.models.course import ALL_REQUIRED_CREDIT
+from pkg.models.course import ALL_REQUIRED_CREDIT, Course
 from pkg.models.pagination import Pagination
 from pkg.models.student import Student
 from pkg.providers.neptun import University
@@ -60,6 +60,11 @@ class UITerminal:
             if table.row_count >= display_row_number:
                 courses.set_quantity(quantity)
                 break
+
+        page_number = self._all_course_pagination.get_page_number()
+        last_page_number = self._all_course_pagination.get_last_page_number()
+        
+        table.title = f"{table.title} ({page_number}/{last_page_number})"
 
         self._console.print(self._get_home_layout(self._get_informations_layout(), data_layout))
         self._listen_user_input()
@@ -163,61 +168,31 @@ class UITerminal:
         return DataLayout(layout=data_layout, table=table)
 
     def _home_courses_next_page(self):
-        data_layout, table = self._get_data_layout_and_table()
-
-        next_courses = self._all_course_pagination.get_next_page_elements()
-
-        if len(next_courses) == 0:
-            return
-
-        for course in next_courses:
-            table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
-            data_layout.update(table)
-        
-        self._console.clear()
-        print(self._get_home_layout(self._get_informations_layout(), data_layout))
+        self._print_table_courses(self._all_course_pagination.get_next_page_elements())
 
     def _home_courses_previous_page(self):
-        data_layout, table = self._get_data_layout_and_table()
-
-        previous_courses = self._all_course_pagination.get_previous_page_elements()
-
-        if len(previous_courses) == 0:
-            return
-
-        for course in previous_courses:
-            table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
-            data_layout.update(table)
-        
-        self._console.clear()
-        print(self._get_home_layout(self._get_informations_layout(), data_layout))
+        self._print_table_courses(self._all_course_pagination.get_previous_page_elements())
 
     def _home_courses_first_page(self):
-        data_layout, table = self._get_data_layout_and_table()
-
-        first_page_courses = self._all_course_pagination.get_first_page_elements()    
-
-        if len(first_page_courses) == 0:
-            return
-        
-        for course in first_page_courses:
-            table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
-            data_layout.update(table)
-        
-        self._console.clear()
-        print(self._get_home_layout(self._get_informations_layout(), data_layout))
+        self._print_table_courses(self._all_course_pagination.get_first_page_elements())
 
     def _home_courses_last_page(self):
+        self._print_table_courses(self._all_course_pagination.get_last_page_elements())      
+
+    def _print_table_courses(self, courses: list[Course]):
         data_layout, table = self._get_data_layout_and_table()
 
-        last_page_courses = self._all_course_pagination.get_last_page_elements()    
-
-        if len(last_page_courses) == 0:
+        if len(courses) == 0:
             return
-        
-        for course in last_page_courses:
+
+        for course in courses:
             table.add_row(course.code, course.name, course.credit, course.recommended_semester, course.course_enrollment_times, course.course_type, course.result)
             data_layout.update(table)
         
+        page_number = self._all_course_pagination.get_page_number()
+        last_page_number = self._all_course_pagination.get_last_page_number()
+
+        table.title = f"{table.title} ({page_number}/{last_page_number})"
+
         self._console.clear()
-        print(self._get_home_layout(self._get_informations_layout(), data_layout))        
+        print(self._get_home_layout(self._get_informations_layout(), data_layout))      
