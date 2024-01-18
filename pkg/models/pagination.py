@@ -33,21 +33,41 @@ class Pagination(Generic[T]):
         page = self._page_index / self._quantity
         return math.floor(page) * self._quantity
 
-    def set_quantity(self, quantity):
-        self._quantity = quantity
+    @property
+    def quantity(self):
+        return self._quantity
+
+    @quantity.setter
+    def quantity(self, new_quantity):
+        self._quantity = new_quantity
 
     def get_page_number(self) -> int:
+        if self._quantity == 0:
+            return 1
         page = self._page_index / self._quantity
-        if page <= 1:
-            page = 1
-        else:
-            page = math.floor(page)
-            
-        return page
+        return math.floor(page) + 1
 
-    def get_first_page(self) -> list[T]:
+    def get_last_page_number(self) -> int:
+        if len(self._data) <= self._quantity:
+            return 1
+        page = len(self._data) / self._quantity
+        return math.floor(page) + 1
+
+    def get_first_page_elements(self) -> list[T]:
         self._page_index = 0
-        return self._data[self._page_index, self._quantity, 1]
+        return self._data[self._page_index:self._quantity:1]
+    
+    def get_last_page_elements(self) -> list[T]:
+        if len(self._data) == 0:
+            return []
+        page_in_float = len(self._data) / self._quantity
+        first_index_of_last_page = math.floor(page_in_float) * self._quantity
+        if self._page_index == first_index_of_last_page:
+            return []
+        
+        self._page_index = first_index_of_last_page
+        remaining_quantity = first_index_of_last_page + (len(self._data) - first_index_of_last_page)
+        return self._data[self._page_index:remaining_quantity:1]
 
     def get_current_page_elements(self) -> list[T]:
         index = self._page_index
